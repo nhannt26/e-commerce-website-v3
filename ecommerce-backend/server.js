@@ -1,6 +1,6 @@
 const express = require('express');
 require('dotenv').config();
-const { errorHandler, notFound } = require('./middleware/errorHandler');
+const connectDB = require('./config/db');
 const rateLimiter = require('./middleware/rateLimiter');
 const rateLimitHeaders = require('./middleware/rateLimitHeaders');
 
@@ -11,22 +11,29 @@ app.use(express.json());
 app.use(rateLimiter);
 app.use(rateLimitHeaders);
 
+connectDB();
+
 // Routes
 const productRoutes = require('./routes/products');
 const categoryRoutes = require('./routes/categories');
+const reviewRoutes = require('./routes/reviews');
 
 app.use('/api/products', productRoutes);
+app.use('/api', reviewRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 // Home route
 app.get('/', (req, res) => {
     res.json({
-        message: 'E-commerce API',
-        version: '1.0.0'
+        message: 'E-commerce API with MongoDB',
+        version: '2.0.0',
+        database: 'Connected'
     });
 });
 
 // Error Handlers (must be LAST!)
+const { errorHandler, notFound } = require('./middleware/errorHandler');
 app.use(notFound);
 app.use(errorHandler);
 
