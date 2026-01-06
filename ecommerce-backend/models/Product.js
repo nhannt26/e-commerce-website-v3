@@ -82,8 +82,25 @@ const productSchema = new mongoose.Schema(
     stock: {
       type: Number,
       required: true,
-      min: [0, "Stock cannot be negative"],
+      min: 0,
       default: 0,
+    },
+
+    reserved: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
+    lowStockThreshold: {
+      type: Number,
+      default: 10,
+    },
+
+    stockStatus: {
+      type: String,
+      enum: ["in-stock", "low-stock", "out-of-stock", "discontinued"],
+      default: "in-stock",
     },
 
     weight: {
@@ -227,6 +244,11 @@ productSchema.pre("save", function () {
   }
 });
 
+productSchema.pre('save', function(next) {
+    this.updateStockStatus();
+    next();
+});
+
 //
 // ================= INSTANCE METHODS =================
 //
@@ -267,6 +289,45 @@ productSchema.methods.applyDiscount = async function (percentage, startDate, end
   this.saleEndDate = endDate;
 
   return await this.save();
+};
+
+// Get available stock (total - reserved)
+productSchema.methods.getAvailableStock = function() {
+    return Math.max(0, this.stock - this.reserved);
+};
+
+// Check if can fulfill quantity
+productSchema.methods.canFulfill = function(quantity) {
+    return this.getAvailableStock() >= quantity;
+};
+
+// Reserve stock for cart
+productSchema.methods.reserveStock = async function(quantity) {
+    if (!this.canFulfill(quantity)) {
+        throw new Error('Insufficient stock available');
+    }
+    
+    this.reserved += quantity;
+    await this.save();
+};
+
+// Release reserved stock
+productSchema.methods.releaseStock = async function(quantity) {
+    this.reserved = Math.max(0, this.reserved - quantity);
+    await this.save();
+};
+
+// Update stock status
+productSchema.methods.updateStockStatus = function() {
+    const available = this.getAvailableStock();
+    
+    if (available === 0) {
+        this.stockStatus = 'out-of-stock';
+    } else if (available <= this.lowStockThreshold) {
+        this.stockStatus = 'low-stock';
+    } else {
+        this.stockStatus = 'in-stock';
+    }
 };
 
 //

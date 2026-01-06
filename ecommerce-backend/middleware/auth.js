@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const Cart = require("../models/Cart");
 
 /* ======================================================
    PROTECT – Require authenticated user
@@ -83,22 +84,31 @@ exports.optionalAuth = async (req, res, next) => {
   try {
     let token;
 
-    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+    if (req.headers.authorization?.startsWith("Bearer")) {
       token = req.headers.authorization.split(" ")[1];
     }
 
-    if (!token) return next();
+    if (token) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.userId);
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.userId);
+      if (user && user.isActive) {
+        req.user = user;
 
-    if (user && user.isActive) {
-      req.user = user;
+        // Auto-merge guest cart if exists
+        if (req.session.cartId) {
+          try {
+            await Cart.mergeGuestCart(req.session.cartId, user._id);
+            delete req.session.cartId;
+          } catch (error) {
+            console.error("Cart merge error:", error);
+          }
+        }
+      }
     }
 
     next();
   } catch (error) {
-    // Silent fail → continue without auth
     next();
   }
 };

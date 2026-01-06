@@ -292,4 +292,63 @@ router.delete("/:id", clearProductCache, async (req, res, next) => {
   }
 });
 
+// GET /api/products/:id/stock - Check stock availability
+router.get('/:id/stock', async (req, res, next) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found'
+            });
+        }
+        
+        res.json({
+            success: true,
+            data: {
+                productId: product._id,
+                totalStock: product.stock,
+                reserved: product.reserved,
+                available: product.getAvailableStock(),
+                stockStatus: product.stockStatus,
+                isAvailable: product.getAvailableStock() > 0
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+// POST /api/products/:id/check-stock - Check if quantity available
+router.post('/:id/check-stock', async (req, res, next) => {
+    try {
+        const { quantity } = req.body;
+        const product = await Product.findById(req.params.id);
+        
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found'
+            });
+        }
+        
+        const canFulfill = product.canFulfill(quantity);
+        
+        res.json({
+            success: true,
+            data: {
+                requested: quantity,
+                available: product.getAvailableStock(),
+                canFulfill: canFulfill,
+                message: canFulfill 
+                    ? `${quantity} items available` 
+                    : `Only ${product.getAvailableStock()} items available`
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
 module.exports = router;
