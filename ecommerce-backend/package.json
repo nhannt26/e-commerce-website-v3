@@ -16,13 +16,16 @@
     "bcryptjs": "^3.0.3",
     "connect-mongo": "^6.0.0",
     "cookie-parser": "^1.4.7",
+    "crypto-js": "^4.2.0",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "express-rate-limit": "^8.2.1",
     "express-session": "^1.18.2",
     "jsonwebtoken": "^9.0.3",
+    "moment": "^2.30.1",
     "mongoose": "^9.1.1",
     "pdfkit": "^0.17.2",
+    "querystring": "^0.2.1",
     "slugify": "^1.6.6"
   },
   "devDependencies": {

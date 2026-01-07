@@ -63,6 +63,39 @@ class EmailService {
 
     return true;
   }
+
+  // Payment confirmation
+  static async sendPaymentConfirmation(order, user, transaction) {
+    console.log("📧 PAYMENT CONFIRMATION EMAIL");
+    console.log("To:", user.email);
+    console.log("Order:", order.orderNumber);
+    console.log("Amount:", `${transaction.amount} VND`);
+    console.log("Transaction:", transaction.transactionId);
+    console.log("Payment Method:", transaction.paymentMethod);
+    console.log("---");
+    return true;
+  }
+
+  // Payment failed
+  static async sendPaymentFailed(order, user, errorMessage) {
+    console.log("📧 PAYMENT FAILED EMAIL");
+    console.log("To:", user.email);
+    console.log("Order:", order.orderNumber);
+    console.log("Error:", errorMessage);
+    console.log("---");
+    return true;
+  }
+
+  // Refund processed
+  static async sendRefundConfirmation(order, user, transaction) {
+    console.log("📧 REFUND CONFIRMATION EMAIL");
+    console.log("To:", user.email);
+    console.log("Order:", order.orderNumber);
+    console.log("Refund Amount:", `${transaction.refundAmount} VND`);
+    console.log("Reason:", transaction.refundReason);
+    console.log("---");
+    return true;
+  }
 }
 
 module.exports = EmailService;
