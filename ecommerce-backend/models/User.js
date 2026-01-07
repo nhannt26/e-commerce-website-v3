@@ -122,8 +122,11 @@ const userSchema = new mongoose.Schema(
       min: 0,
     },
 
-    addresses: [addressSchema],
-
+    addresses: {
+      type: [addressSchema],
+      default: [],
+    },
+    
     wishlist: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -158,6 +161,10 @@ userSchema.virtual("fullName").get(function () {
 });
 
 userSchema.virtual("defaultAddress").get(function () {
+  if (!Array.isArray(this.addresses) || this.addresses.length === 0) {
+    return null;
+  }
+
   return this.addresses.find((addr) => addr.isDefault) || this.addresses[0];
 });
 
@@ -222,10 +229,7 @@ userSchema.methods.generatePasswordResetToken = function () {
 userSchema.methods.generateEmailVerificationToken = function () {
   const token = crypto.randomBytes(32).toString("hex");
 
-  this.emailVerificationToken = crypto
-    .createHash("sha256")
-    .update(token)
-    .digest("hex");
+  this.emailVerificationToken = crypto.createHash("sha256").update(token).digest("hex");
 
   this.emailVerificationExpire = Date.now() + 24 * 60 * 60 * 1000; // 24h
 

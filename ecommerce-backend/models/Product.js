@@ -244,9 +244,8 @@ productSchema.pre("save", function () {
   }
 });
 
-productSchema.pre('save', function(next) {
+productSchema.pre('save', function() {
     this.updateStockStatus();
-    next();
 });
 
 //

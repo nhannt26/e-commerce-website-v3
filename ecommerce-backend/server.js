@@ -44,7 +44,9 @@ const adminProductRoutes = require('./routes/admin/products');
 const analyticsRoutes = require('./routes/admin/analytics');
 const adminCouponRoutes = require('./routes/admin/coupons');
 const cartRoutes = require('./routes/cart');
-
+const orderRoutes = require('./routes/orders');
+const adminOrderRoutes = require('./routes/admin/orders');
+const reportRoutes = require('./routes/admin/reports');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
@@ -58,6 +60,9 @@ app.use('/api/admin/products', adminProductRoutes);
 app.use('/api/admin/analytics', analyticsRoutes);
 app.use('/api/admin/coupons', adminCouponRoutes);
 app.use('/api/cart', cartRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/admin/orders', adminOrderRoutes);
+app.use('/api/admin/reports', reportRoutes);
 
 // Home route
 app.get('/', (req, res) => {
