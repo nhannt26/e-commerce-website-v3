@@ -84,10 +84,10 @@ export const categoryAPI = {
 // Cart API endpoints (will use later)
 export const cartAPI = {
   getCart: () => api.get("/cart"),
-  addItem: (productId, quantity) => api.post("/cart/add", { productId, quantity }),
-  updateItem: (productId, quantity) => api.put(`/cart/update/${productId}`, { quantity }),
-  removeItem: (productId) => api.delete(`/cart/remove/${productId}`),
-  clearCart: () => api.delete("/cart/clear"),
+  addItem: (productId, quantity = 1) => api.post("/cart/items", { productId, quantity }),
+  updateItem: (itemId, quantity) => api.put(`/cart/items/${itemId}`, { quantity }),
+  removeItem: (itemId) => api.delete(`/cart/items/${itemId}`),
+  clearCart: () => api.delete("/cart"),
 };
 
 // Auth API endpoints (will use later)
@@ -96,6 +96,20 @@ export const authAPI = {
   register: (userData) => api.post("/auth/register", userData),
   logout: () => api.post("/auth/logout"),
   getProfile: () => api.get("/auth/profile"),
+};
+
+// Order API endpoints (will use later)
+export const orderAPI = {
+  create: (orderData) => api.post("/orders", orderData),
+  getAll: (params) => api.get("/orders", { params }),
+  getById: (id) => api.get(`/orders/${id}`),
+  cancel: (id) => api.post(`/orders/${id}/cancel`),
+};
+
+// Payment API endpoints (will use later)
+export const paymentAPI = {
+  create: (orderId) => api.post("/payment/create", { orderId }),
+  getTransaction: (id) => api.get(`/payment/transaction/${id}`),
 };
 
 export default api;

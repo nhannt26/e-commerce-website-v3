@@ -13,10 +13,14 @@ import {
   Container,
   Button,
 } from "@mui/material";
-import { Search as SearchIcon, ShoppingCart as CartIcon, AccountCircle, Menu as MenuIcon } from "@mui/icons-material";
+import { Search as SearchIcon, ShoppingCart as CartIcon, AccountCircle } from "@mui/icons-material";
 import { styled, alpha } from "@mui/material/styles";
+import { useCart } from "../../context/CartContext";
 
-// Styled search component
+/* =====================
+   Styled Search
+===================== */
+
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
@@ -24,10 +28,8 @@ const Search = styled("div")(({ theme }) => ({
   "&:hover": {
     backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
-  marginLeft: 0,
   width: "100%",
   [theme.breakpoints.up("sm")]: {
-    marginLeft: theme.spacing(1),
     width: "auto",
   },
 }));
@@ -58,20 +60,36 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
+/* =====================
+        Navbar
+===================== */
+
 export default function Navbar() {
   const navigate = useNavigate();
+  const { cartItemCount } = useCart();
+
   const [anchorEl, setAnchorEl] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Get cart count from localStorage or context (will implement in next lab)
-  const cartItemCount = 0;
+  /* ===== Auth Info ===== */
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user"));
+  const isLoggedIn = Boolean(token);
 
+  /* ===== Menu Handlers ===== */
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    handleMenuClose();
+    navigate("/login");
   };
 
   const handleSearch = (e) => {
@@ -92,28 +110,22 @@ export default function Navbar() {
             variant="h6"
             component={Link}
             to="/"
-            sx={{
-              mr: 2,
-              display: "flex",
-              fontWeight: 700,
-              color: "inherit",
-              textDecoration: "none",
-            }}
+            sx={{ mr: 2, fontWeight: 700, color: "inherit", textDecoration: "none" }}
           >
             🛍️ E-Commerce
           </Typography>
 
-          {/* Navigation Links */}
+          {/* Navigation */}
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            <Button component={Link} to="/products" sx={{ my: 2, color: "white", display: "block" }}>
+            <Button component={Link} to="/products" sx={{ color: "white" }}>
               Products
             </Button>
-            <Button component={Link} to="/categories" sx={{ my: 2, color: "white", display: "block" }}>
+            <Button component={Link} to="/categories" sx={{ color: "white" }}>
               Categories
             </Button>
           </Box>
 
-          {/* Search Bar */}
+          {/* Search */}
           <Search>
             <SearchIconWrapper>
               <SearchIcon />
@@ -127,42 +139,68 @@ export default function Navbar() {
             </form>
           </Search>
 
-          {/* Cart Icon */}
-          <IconButton size="large" color="inherit" component={Link} to="/cart" sx={{ ml: 2 }}>
+          {/* Cart */}
+          <IconButton color="inherit" component={Link} to="/cart" sx={{ ml: 2 }}>
             <Badge badgeContent={cartItemCount} color="error">
               <CartIcon />
             </Badge>
           </IconButton>
 
-          {/* User Menu */}
-          <IconButton size="large" edge="end" onClick={handleProfileMenuOpen} color="inherit">
-            <AccountCircle />
-          </IconButton>
+          {/* ================= USER MENU ================= */}
 
-          <Menu
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-            open={isMenuOpen}
-            onClose={handleMenuClose}
-          >
-            <MenuItem component={Link} to="/profile" onClick={handleMenuClose}>
-              Profile
-            </MenuItem>
-            <MenuItem component={Link} to="/orders" onClick={handleMenuClose}>
-              My Orders
-            </MenuItem>
-            <MenuItem component={Link} to="/login" onClick={handleMenuClose}>
-              Login
-            </MenuItem>
-          </Menu>
+          {isLoggedIn ? (
+            <>
+              {/* User Name Button */}
+              <Button
+                color="inherit"
+                onClick={handleProfileMenuOpen}
+                sx={{ textTransform: "none", ml: 1 }}
+                startIcon={<AccountCircle />}
+              >
+                {user?.firstName} {user?.lastName}
+              </Button>
+
+              <Menu
+                anchorEl={anchorEl}
+                open={isMenuOpen}
+                onClose={handleMenuClose}
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
+              >
+                <MenuItem component={Link} to="/profile" onClick={handleMenuClose}>
+                  Profile
+                </MenuItem>
+
+                <MenuItem component={Link} to="/orders" onClick={handleMenuClose}>
+                  My Orders
+                </MenuItem>
+
+                {user?.role === "admin" && (
+                  <MenuItem component={Link} to="/admin" onClick={handleMenuClose}>
+                    Admin
+                  </MenuItem>
+                )}
+
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              </Menu>
+            </>
+          ) : (
+            <>
+              {/* Not logged in */}
+              <Button color="inherit" component={Link} to="/login">
+                Login
+              </Button>
+              <Button
+                color="inherit"
+                component={Link}
+                to="/register"
+                variant="outlined"
+                sx={{ ml: 1, borderColor: "white", color: "white" }}
+              >
+                Register
+              </Button>
+            </>
+          )}
         </Toolbar>
       </Container>
     </AppBar>

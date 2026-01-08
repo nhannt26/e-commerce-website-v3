@@ -1,18 +1,23 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardMedia, CardContent, CardActions, Typography, Button, Box, Chip, Rating } from "@mui/material";
 import { ShoppingCart as CartIcon } from "@mui/icons-material";
+import { useCart } from "../../context/CartContext";
 
 export default function ProductCard({ product }) {
   const navigate = useNavigate();
+  const { addToCart } = useCart();
 
   const handleCardClick = () => {
     navigate(`/products/${product._id}`);
   };
 
-  const handleAddToCart = (e) => {
+  const handleAddToCart = async (e) => {
     e.stopPropagation();
-    // Will implement in next lab
-    console.log("Add to cart:", product._id);
+    try {
+      await addToCart(product._id, 1);
+    } catch (error) {
+      console.error("Failed to add to cart:", error);
+    }
   };
 
   const formatPrice = (price) => {
