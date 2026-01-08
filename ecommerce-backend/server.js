@@ -6,11 +6,17 @@ const rateLimitHeaders = require("./middleware/rateLimitHeaders");
 const session = require("express-session");
 const MongoStore = require("connect-mongo").default;
 const app = express();
+const cors = require("cors");
 
 // Middleware
 app.use(express.json());
 app.use(rateLimiter);
 app.use(rateLimitHeaders);
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+}));
+
 // Session middleware (BEFORE routes!)
 app.use(
   session({
@@ -32,6 +38,7 @@ app.use(
   })
 );
 
+// Connect to MongoDB
 connectDB();
 
 // Routes
