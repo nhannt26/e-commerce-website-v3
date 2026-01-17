@@ -13,6 +13,12 @@ import { AuthProvider } from "./context/AuthContext";
 import RegisterPage from "./pages/RegisterPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CheckoutPage from "./pages/CheckoutPage";
+import ProductList from "./pages/admin/ProductList";
+import Dashboard from "./pages/admin/Dashboard";
+import AdminLayout from "./components/admin/AdminLayout";
+import ProductForm from "./pages/admin/ProductForm";
+import OrderDetail from "./pages/admin/OrderDetail";
+import UserList from "./pages/admin/UserList";
 
 // Create Material-UI theme
 const theme = createTheme({
@@ -60,6 +66,23 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
+                {/* Admin routes */}
+                <Route
+                  path="/admin"
+                  element={
+                    <ProtectedRoute adminOnly>
+                      <AdminLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<Dashboard />} />
+                  <Route path="products" element={<ProductList />} />
+                  <Route path="products/create" element={<ProductForm />} />
+                  <Route path="products/:id/edit" element={<ProductForm />} />
+                  <Route path="orders" element={<OrderList />} />
+                  <Route path="orders/:id" element={<OrderDetail />} />
+                  <Route path="users" element={<UserList />} />
+                </Route>
                 {/* More routes will be added in next labs */}
               </Routes>
             </Layout>

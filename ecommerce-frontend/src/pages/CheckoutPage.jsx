@@ -109,7 +109,7 @@ export default function CheckoutPage() {
       case 0:
         return (
           <Grid container spacing={3}>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 fullWidth
                 label="First Name"
@@ -118,7 +118,7 @@ export default function CheckoutPage() {
                 helperText={errors.firstName?.message}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 fullWidth
                 label="Last Name"
@@ -127,7 +127,7 @@ export default function CheckoutPage() {
                 helperText={errors.lastName?.message}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <TextField
                 fullWidth
                 label="Phone"
@@ -136,7 +136,7 @@ export default function CheckoutPage() {
                 helperText={errors.phone?.message}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <TextField
                 fullWidth
                 multiline
@@ -147,7 +147,7 @@ export default function CheckoutPage() {
                 helperText={errors.address?.message}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 fullWidth
                 label="City"
@@ -156,7 +156,7 @@ export default function CheckoutPage() {
                 helperText={errors.city?.message}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 fullWidth
                 label="District"

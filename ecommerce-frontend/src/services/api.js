@@ -104,12 +104,43 @@ export const orderAPI = {
   getAll: (params) => api.get("/orders", { params }),
   getById: (id) => api.get(`/orders/${id}`),
   cancel: (id) => api.post(`/orders/${id}/cancel`),
+  updateStatus: (id, status) => api.put(`/orders/${id}/status`, { status }),
 };
 
 // Payment API endpoints (will use later)
 export const paymentAPI = {
   create: (orderId) => api.post("/payment/create", { orderId }),
   getTransaction: (id) => api.get(`/payment/transaction/${id}`),
+};
+
+// Admin APIs
+export const adminDashboardAPI = {
+  getStats: () => api.get("/admin/dashboard"),
+};
+
+export const adminProductAPI = {
+  getAll: (params) => api.get("/admin/products", { params }),
+  create: (data) =>
+    api.post("/admin/products", data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
+  update: (id, data) =>
+    api.put(`/admin/products/${id}`, data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
+  delete: (id) => api.delete(`/admin/products/${id}`),
+};
+
+export const adminOrderAPI = {
+  getAll: (params) => api.get("/admin/orders", { params }),
+  getById: (id) => api.get(`/admin/orders/${id}`),
+  updateStatus: (id, status) => api.put(`/admin/orders/${id}/status`, { status }),
+};
+
+export const adminUserAPI = {
+  getAll: (params) => api.get("/admin/users", { params }),
+  getById: (id) => api.get(`/admin/users/${id}`),
+  updateRole: (id, role) => api.put(`/admin/users/${id}/role`, { role }),
 };
 
 export default api;
