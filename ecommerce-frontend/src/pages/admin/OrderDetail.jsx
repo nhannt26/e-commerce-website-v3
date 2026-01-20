@@ -18,20 +18,28 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useOrderDetail, useUpdateOrderStatus } from "../../hooks/useOrderDetail";
+import { useEffect } from "react";
 
 const STATUS_OPTIONS = ["pending", "processing", "shipped", "delivered", "cancelled"];
 
 export default function OrderDetail() {
   const { id } = useParams();
-  const { data, isLoading } = useOrderDetail(id);
+  const { data: order, isLoading } = useOrderDetail(id);
+  console.log(order);
+
   const updateStatus = useUpdateOrderStatus();
 
-  const order = data?.data;
-  const [editedStatus, setEditedStatus] = useState(null);
+  const [editedStatus, setEditedStatus] = useState("");
+
+  useEffect(() => {
+    if (!editedStatus && order?.orderStatus) {
+      setEditedStatus(order.orderStatus);
+    }
+  }, [order?.orderStatus, editedStatus]);
 
   if (isLoading) return <CircularProgress />;
-  if (!order) return null;
-
+  if (!order) return <Typography>No order found</Typography>;
+  
   return (
     <Box>
       <Typography variant="h5" mb={2}>
@@ -40,12 +48,12 @@ export default function OrderDetail() {
 
       <Grid container spacing={2}>
         {/* Order Info */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
               <Typography variant="h6">Order Information</Typography>
               <Typography>Date: {new Date(order.createdAt).toLocaleString()}</Typography>
-              <Typography>
+              <Typography component="div">
                 Payment Status:{" "}
                 <Chip
                   label={order.paymentStatus}
@@ -53,17 +61,17 @@ export default function OrderDetail() {
                   size="small"
                 />
               </Typography>
-              <Typography>Total: {order.totalAmount.toLocaleString()}₫</Typography>
+              <Typography>Total: {order.pricing?.total?.toLocaleString()}₫</Typography>
             </CardContent>
           </Card>
         </Grid>
 
         {/* Customer */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
               <Typography variant="h6">Customer Details</Typography>
-              <Typography>Name: {order.user?.name}</Typography>
+              <Typography>Name: {order.user?.fullName}</Typography>
               <Typography>Email: {order.user?.email}</Typography>
               <Typography>Phone: {order.shippingAddress?.phone}</Typography>
             </CardContent>
@@ -71,20 +79,20 @@ export default function OrderDetail() {
         </Grid>
 
         {/* Shipping Address */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Card>
             <CardContent>
               <Typography variant="h6">Shipping Address</Typography>
               <Typography>
-                {order.shippingAddress?.address}, {order.shippingAddress?.ward}, {order.shippingAddress?.district},{" "}
-                {order.shippingAddress?.city}
+                {order.shippingAddress?.street}, {order.shippingAddress?.city}, {order.shippingAddress?.postalCode},{" "}
+                {order.shippingAddress?.country}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
 
         {/* Order Items */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" mb={1}>
@@ -101,7 +109,7 @@ export default function OrderDetail() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {order.items.map((item) => (
+                  {(order.items ?? []).map((item) => (
                     <TableRow key={item._id}>
                       <TableCell>{item.product?.name}</TableCell>
                       <TableCell>{item.price.toLocaleString()}₫</TableCell>
@@ -116,7 +124,7 @@ export default function OrderDetail() {
         </Grid>
 
         {/* Update Status */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" mb={1}>
@@ -124,11 +132,7 @@ export default function OrderDetail() {
               </Typography>
 
               <Box display="flex" gap={2} alignItems="center">
-                <Select
-                  value={editedStatus ?? order.status}
-                  onChange={(e) => setEditedStatus(e.target.value)}
-                  size="small"
-                >
+                <Select value={editedStatus} onChange={(e) => setEditedStatus(e.target.value)} size="small">
                   {STATUS_OPTIONS.map((s) => (
                     <MenuItem key={s} value={s}>
                       {s}
@@ -137,13 +141,7 @@ export default function OrderDetail() {
                 </Select>
                 <Button
                   variant="contained"
-                  disabled={updateStatus.isLoading || (editedStatus ?? order.status) === order.status}
-                  onClick={() =>
-                    updateStatus.mutate({
-                      id: order._id,
-                      status: editedStatus ?? order.status,
-                    })
-                  }
+                  disabled={updateStatus.isLoading || !editedStatus || editedStatus === order?.orderStatus}
                 >
                   Update
                 </Button>

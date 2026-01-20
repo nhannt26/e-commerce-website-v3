@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Cart = require("../models/Cart");
 const Coupon = require("../models/Coupon");
 const Product = require("../models/Product");
@@ -21,27 +22,13 @@ const getCart = async (req) => {
 // ========== GET CART ==========
 exports.getCart = async (req, res, next) => {
   try {
-    let cart;
+    let cart = req.user
+      ? await Cart.getCartForUser(req.user._id)
+      : await Cart.getCartForSession(req.session.cartId || (req.session.cartId = req.sessionID));
 
-    // Get cart based on authentication
-    if (req.user) {
-      // Logged in user
-      cart = await Cart.getCartForUser(req.user._id);
-    } else {
-      // Guest user
-      if (!req.session.cartId) {
-        req.session.cartId = req.sessionID;
-      }
-      cart = await Cart.getCartForSession(req.session.cartId);
-    }
+    await cart.populateItems();
 
-    // Populate product details
-    await cart.populate();
-
-    res.json({
-      success: true,
-      data: cart,
-    });
+    res.json({ success: true, data: cart });
   } catch (error) {
     next(error);
   }
@@ -50,13 +37,19 @@ exports.getCart = async (req, res, next) => {
 // ========== ADD ITEM TO CART ==========
 exports.addItem = async (req, res, next) => {
   try {
-    const { productId, quantity } = req.body;
+    let { productId, quantity } = req.body;
+    console.log(req.body);
 
-    // Validation
-    if (!productId) {
+    // 🔒 Nếu FE gửi nhầm object
+    if (typeof productId === "object" && productId.productId) {
+      quantity = productId.quantity ?? quantity;
+      productId = productId.productId;
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
       return res.status(400).json({
         success: false,
-        message: "Product ID is required",
+        message: "Invalid product ID",
       });
     }
 
@@ -73,10 +66,7 @@ exports.addItem = async (req, res, next) => {
     if (req.user) {
       cart = await Cart.getCartForUser(req.user._id);
     } else {
-      if (!req.session.cartId) {
-        req.session.cartId = req.sessionID;
-      }
-      cart = await Cart.getCartForSession(req.session.cartId);
+      cart = await Cart.getCartForSession(req.sessionID);
     }
 
     // Add item
@@ -517,7 +507,7 @@ exports.applyCoupon = async (req, res, next) => {
     if (discountValue <= 0) {
       return res.status(400).json({ message: "Coupon discount value invalid" });
     }
-    
+
     if (isNaN(subtotal) || isNaN(discountValue)) {
       return res.status(400).json({
         message: "Invalid cart or coupon data",

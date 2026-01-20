@@ -27,6 +27,8 @@ export default function CartPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { cart, updateQuantity, removeItem, clearCart, loading } = useCart();
+  console.log(cart);
+  
 
   const handleQuantityChange = async (productId, newQuantity) => {
     if (newQuantity < 1) return;
@@ -117,21 +119,21 @@ export default function CartPage() {
                         <Box>
                           <Typography variant="subtitle1">{item.product.name}</Typography>
                           <Typography variant="body2" color="text.secondary">
-                            SKU: {item.product.sku}
+                            {item.product.sku}
                           </Typography>
                         </Box>
                       </Box>
                     </TableCell>
 
                     {/* Price */}
-                    <TableCell align="right">{formatPrice(item.product.price)}</TableCell>
+                    <TableCell align="right">{formatPrice(item.price)}</TableCell>
 
                     {/* Quantity */}
                     <TableCell align="center">
                       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <IconButton
                           size="small"
-                          onClick={() => handleQuantityChange(item.product._id, item.quantity - 1)}
+                          onClick={() => handleQuantityChange(item._id, item.quantity - 1)}
                           disabled={item.quantity <= 1}
                         >
                           -
@@ -139,13 +141,13 @@ export default function CartPage() {
                         <TextField
                           type="number"
                           value={item.quantity}
-                          onChange={(e) => handleQuantityChange(item.product._id, parseInt(e.target.value))}
+                          onChange={(e) => handleQuantityChange(item._id, parseInt(e.target.value))}
                           inputProps={{ min: 1, max: item.product.stock, style: { textAlign: "center" } }}
                           sx={{ width: 60, mx: 1 }}
                         />
                         <IconButton
                           size="small"
-                          onClick={() => handleQuantityChange(item.product._id, item.quantity + 1)}
+                          onClick={() => handleQuantityChange(item._id, item.quantity + 1)}
                           disabled={item.quantity >= item.product.stock}
                         >
                           +
@@ -156,13 +158,13 @@ export default function CartPage() {
                     {/* Subtotal */}
                     <TableCell align="right">
                       <Typography variant="subtitle1" fontWeight="bold">
-                        {formatPrice(item.product.price * item.quantity)}
+                        {formatPrice(item.price * item.quantity)}
                       </Typography>
                     </TableCell>
 
                     {/* Remove */}
                     <TableCell align="center">
-                      <IconButton color="error" onClick={() => handleRemove(item.product._id)}>
+                      <IconButton color="error" onClick={() => handleRemove(item._id)}>
                         <DeleteIcon />
                       </IconButton>
                     </TableCell>

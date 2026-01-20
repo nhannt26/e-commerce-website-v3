@@ -19,6 +19,7 @@ import AdminLayout from "./components/admin/AdminLayout";
 import ProductForm from "./pages/admin/ProductForm";
 import OrderDetail from "./pages/admin/OrderDetail";
 import UserList from "./pages/admin/UserList";
+import OrderList from "./pages/admin/OrderList";
 
 // Create Material-UI theme
 const theme = createTheme({

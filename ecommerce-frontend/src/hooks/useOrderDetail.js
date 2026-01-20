@@ -1,12 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { orderAPI } from "../services/order.api";
 import toast from "react-hot-toast";
+import { adminOrderAPI } from "../services/api";
 
 export const useOrderDetail = (id) => {
   return useQuery({
     queryKey: ["order", id],
-    queryFn: () => orderAPI.getOrderById(id),
+    queryFn: () => adminOrderAPI.getById(id),
     enabled: !!id,
+    return: res => res.data,
   });
 };
 
@@ -14,7 +15,7 @@ export const useUpdateOrderStatus = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: orderAPI.updateOrderStatus,
+    mutationFn: adminOrderAPI.updateStatus,
     onSuccess: () => {
       toast.success("Order status updated");
       queryClient.invalidateQueries({ queryKey: ["orders"] });

@@ -8,28 +8,42 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // ---------------- CHECK AUTH ON LOAD ----------------
   useEffect(() => {
     checkAuth();
   }, []);
 
   const checkAuth = async () => {
     const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const { data } = await authAPI.getProfile();
-        setUser(data.data);
-      } catch {
-        localStorage.removeItem("token");
-      }
+
+    if (!token) {
+      setLoading(false);
+      return;
     }
+
+    try {
+      const { data } = await authAPI.getProfile();
+      console.log(data);
+      
+      setUser(data.user);
+    } catch {
+      localStorage.removeItem("token");
+      setUser(null);
+    }
+
     setLoading(false);
   };
 
+  // ---------------- LOGIN ----------------
   const login = async (credentials) => {
     try {
       const { data } = await authAPI.login(credentials);
+      console.log(data);
+      
+
       localStorage.setItem("token", data.token);
-      setUser(data.data);
+      setUser(data.user);
+
       toast.success("Login successful!");
       return data;
     } catch (error) {
@@ -39,9 +53,11 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // ---------------- REGISTER ----------------
   const register = async (userData) => {
     try {
       const { data } = await authAPI.register(userData);
+
       toast.success("Registration successful! Please login.");
       return data;
     } catch (error) {
@@ -51,11 +67,12 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // ---------------- LOGOUT ----------------
   const logout = async () => {
     try {
       await authAPI.logout();
     } catch (error) {
-      console.error("Logout error:", error);
+      console.warn("Logout request failed:", error);
     } finally {
       localStorage.removeItem("token");
       setUser(null);
@@ -63,6 +80,7 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // ---------------- CONTEXT VALUE ----------------
   const value = {
     user,
     loading,
@@ -76,10 +94,9 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
+// ---------------- HOOK ----------------
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within AuthProvider");
-  }
+  if (!context) throw new Error("useAuth must be used within AuthProvider");
   return context;
 }

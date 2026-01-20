@@ -1,5 +1,8 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
+const Category = require("../models/Category");
+const Product = require("../models/Product");
+const Review = require("../models/Review");
 
 console.log("MONGODB_URI =", process.env.MONGODB_URI); // 👈 debug tạm
 
@@ -15,6 +18,10 @@ async function seedAll() {
     const seedCategories = require("./seedCategories");
     const seedProducts = require("./seedProducts");
     const seedReviews = require("./seedReviews");
+
+    await Category.deleteMany();
+    await Product.deleteMany();
+    await Review.deleteMany();
 
     await seedCategories();
     await seedProducts();

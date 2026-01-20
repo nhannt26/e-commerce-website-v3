@@ -25,6 +25,12 @@ const productSchema = new mongoose.Schema(
       trim: true,
     },
 
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
+    
     description: {
       type: String,
       required: [true, "Description is required"],
@@ -169,7 +175,7 @@ const productSchema = new mongoose.Schema(
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  }
+  },
 );
 
 //
@@ -244,8 +250,14 @@ productSchema.pre("save", function () {
   }
 });
 
-productSchema.pre('save', function() {
-    this.updateStockStatus();
+productSchema.pre("save", function () {
+  this.updateStockStatus();
+});
+
+productSchema.pre("save", function () {
+  if (!this.sku) {
+    this.sku = `SKU-${this._id.toString().slice(-6)}-${Date.now()}`;
+  }
 });
 
 //
@@ -291,42 +303,42 @@ productSchema.methods.applyDiscount = async function (percentage, startDate, end
 };
 
 // Get available stock (total - reserved)
-productSchema.methods.getAvailableStock = function() {
-    return Math.max(0, this.stock - this.reserved);
+productSchema.methods.getAvailableStock = function () {
+  return Math.max(0, this.stock - this.reserved);
 };
 
 // Check if can fulfill quantity
-productSchema.methods.canFulfill = function(quantity) {
-    return this.getAvailableStock() >= quantity;
+productSchema.methods.canFulfill = function (quantity) {
+  return this.getAvailableStock() >= quantity;
 };
 
 // Reserve stock for cart
-productSchema.methods.reserveStock = async function(quantity) {
-    if (!this.canFulfill(quantity)) {
-        throw new Error('Insufficient stock available');
-    }
-    
-    this.reserved += quantity;
-    await this.save();
+productSchema.methods.reserveStock = async function (quantity) {
+  if (!this.canFulfill(quantity)) {
+    throw new Error("Insufficient stock available");
+  }
+
+  this.reserved += quantity;
+  await this.save();
 };
 
 // Release reserved stock
-productSchema.methods.releaseStock = async function(quantity) {
-    this.reserved = Math.max(0, this.reserved - quantity);
-    await this.save();
+productSchema.methods.releaseStock = async function (quantity) {
+  this.reserved = Math.max(0, this.reserved - quantity);
+  await this.save();
 };
 
 // Update stock status
-productSchema.methods.updateStockStatus = function() {
-    const available = this.getAvailableStock();
-    
-    if (available === 0) {
-        this.stockStatus = 'out-of-stock';
-    } else if (available <= this.lowStockThreshold) {
-        this.stockStatus = 'low-stock';
-    } else {
-        this.stockStatus = 'in-stock';
-    }
+productSchema.methods.updateStockStatus = function () {
+  const available = this.getAvailableStock();
+
+  if (available === 0) {
+    this.stockStatus = "out-of-stock";
+  } else if (available <= this.lowStockThreshold) {
+    this.stockStatus = "low-stock";
+  } else {
+    this.stockStatus = "in-stock";
+  }
 };
 
 //

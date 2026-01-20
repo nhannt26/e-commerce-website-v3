@@ -46,6 +46,8 @@ export default function OrderList() {
   const navigate = useNavigate();
 
   const { data, isLoading } = useOrders(status);
+  console.log(data);
+  
   const orders = data?.data || [];
 
   return (
@@ -78,8 +80,8 @@ export default function OrderList() {
             {orders.map((order) => (
               <TableRow key={order._id}>
                 <TableCell>{order.orderNumber}</TableCell>
-                <TableCell>{order.user?.name}</TableCell>
-                <TableCell>{order.totalAmount.toLocaleString()}₫</TableCell>
+                <TableCell>{order.user?.fullName}</TableCell>
+                <TableCell>{order.pricing?.total?.toLocaleString()}₫</TableCell>
                 <TableCell>
                   <Chip
                     label={order.paymentStatus}
@@ -88,7 +90,7 @@ export default function OrderList() {
                   />
                 </TableCell>
                 <TableCell>
-                  <Chip label={order.status} color={statusColor(order.status)} size="small" />
+                  <Chip label={order.orderStatus} color={statusColor(order.orderStatus)} size="small" />
                 </TableCell>
                 <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
                 <TableCell align="right">

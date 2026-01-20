@@ -17,8 +17,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useCreateProduct, useUpdateProduct, useProduct } from "../../hooks/useProducts";
 import ImageUpload from "../../components/admin/ImageUpload";
 import toast from "react-hot-toast";
-
-const categories = ["Phone", "Laptop", "Tablet", "Accessory"];
+import { useCategories } from "../../hooks/useCategories";
+import { useEffect } from "react";
 
 const schema = yup.object({
   name: yup.string().required("Product name is required"),
@@ -40,6 +40,8 @@ export default function ProductForm() {
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct(id);
 
+  const { data: categories = [], isLoading: loadingCategories } = useCategories();
+  console.log(categories);
   const {
     register,
     handleSubmit,
@@ -59,6 +61,19 @@ export default function ProductForm() {
       isActive: true,
     },
   });
+
+  useEffect(() => {
+    if (isEdit && product) {
+      setValue("name", product.name);
+      setValue("sku", product.sku);
+      setValue("category", product.category?._id || "");
+      setValue("description", product.description || "");
+      setValue("price", product.price);
+      setValue("discount", product.discount || 0);
+      setValue("stock", product.stock);
+      setValue("isActive", product.isActive);
+    }
+  }, [isEdit, product, setValue]);
 
   // Prefill when editing
   if (isEdit && product) {
@@ -143,18 +158,24 @@ export default function ProductForm() {
               select
               label="Category"
               fullWidth
+              defaultValue=""
               {...register("category")}
               error={!!errors.category}
               helperText={errors.category?.message}
+              disabled={loadingCategories}
             >
+              <MenuItem value="">
+                <em>Select category</em>
+              </MenuItem>
+
               {categories.map((cat) => (
-                <MenuItem key={cat} value={cat}>
-                  {cat}
+                <MenuItem key={cat._id} value={cat._id}>
+                  {cat.name}
                 </MenuItem>
               ))}
             </TextField>
           </Grid>
-
+          
           <Grid size={{ xs: 12 }}>
             <TextField label="Description" multiline rows={4} fullWidth {...register("description")} />
           </Grid>

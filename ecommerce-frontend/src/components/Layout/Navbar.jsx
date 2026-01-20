@@ -16,11 +16,9 @@ import {
 import { Search as SearchIcon, ShoppingCart as CartIcon, AccountCircle } from "@mui/icons-material";
 import { styled, alpha } from "@mui/material/styles";
 import { useCart } from "../../context/CartContext";
+import { useAuth } from "../../context/AuthContext";
 
-/* =====================
-   Styled Search
-===================== */
-
+// ------------------- Styled Components -------------------
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
@@ -28,8 +26,10 @@ const Search = styled("div")(({ theme }) => ({
   "&:hover": {
     backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
+  marginLeft: 0,
   width: "100%",
   [theme.breakpoints.up("sm")]: {
+    marginLeft: theme.spacing(1),
     width: "auto",
   },
 }));
@@ -60,46 +60,31 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-/* =====================
-        Navbar
-===================== */
-
+// ------------------- Component -------------------
 export default function Navbar() {
   const navigate = useNavigate();
-  const { cartItemCount } = useCart();
-
   const [anchorEl, setAnchorEl] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  /* ===== Auth Info ===== */
-  const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user"));
-  const isLoggedIn = Boolean(token);
+  const { itemCount } = useCart();
+  const { user, isAuthenticated, logout, loading } = useAuth();
+  if (loading) return null;
 
-  /* ===== Menu Handlers ===== */
-  const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  const isMenuOpen = Boolean(anchorEl);
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+  const handleProfileMenuOpen = (event) => setAnchorEl(event.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    handleMenuClose();
+    logout();
+    setAnchorEl(null);
     navigate("/login");
   };
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/products?search=${searchQuery}`);
-    }
+    if (searchQuery.trim()) navigate(`/products?search=${searchQuery}`);
   };
-
-  const isMenuOpen = Boolean(anchorEl);
 
   return (
     <AppBar position="sticky">
@@ -110,7 +95,13 @@ export default function Navbar() {
             variant="h6"
             component={Link}
             to="/"
-            sx={{ mr: 2, fontWeight: 700, color: "inherit", textDecoration: "none" }}
+            sx={{
+              mr: 2,
+              display: "flex",
+              fontWeight: 700,
+              color: "inherit",
+              textDecoration: "none",
+            }}
           >
             🛍️ E-Commerce
           </Typography>
@@ -130,6 +121,7 @@ export default function Navbar() {
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
+
             <form onSubmit={handleSearch}>
               <StyledInputBase
                 placeholder="Search products..."
@@ -140,26 +132,21 @@ export default function Navbar() {
           </Search>
 
           {/* Cart */}
-          <IconButton color="inherit" component={Link} to="/cart" sx={{ ml: 2 }}>
-            <Badge badgeContent={cartItemCount} color="error">
+          <IconButton size="large" color="inherit" component={Link} to="/cart" sx={{ ml: 2 }}>
+            <Badge badgeContent={itemCount} color="error">
               <CartIcon />
             </Badge>
           </IconButton>
 
-          {/* ================= USER MENU ================= */}
-
-          {isLoggedIn ? (
+          {/* ------------------- AUTH SECTION ------------------- */}
+          {isAuthenticated ? (
             <>
-              {/* User Name Button */}
-              <Button
-                color="inherit"
-                onClick={handleProfileMenuOpen}
-                sx={{ textTransform: "none", ml: 1 }}
-                startIcon={<AccountCircle />}
-              >
-                {user?.firstName} {user?.lastName}
+              {/* Show user's first name */}
+              <Button color="inherit" onClick={handleProfileMenuOpen} sx={{ ml: 1, fontWeight: "bold" }}>
+                {user?.fullName ? `Hi, ${user.fullName}` : <AccountCircle />}
               </Button>
 
+              {/* Dropdown Menu */}
               <Menu
                 anchorEl={anchorEl}
                 open={isMenuOpen}
@@ -177,7 +164,7 @@ export default function Navbar() {
 
                 {user?.role === "admin" && (
                   <MenuItem component={Link} to="/admin" onClick={handleMenuClose}>
-                    Admin
+                    Admin Dashboard
                   </MenuItem>
                 )}
 
@@ -186,17 +173,10 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              {/* Not logged in */}
-              <Button color="inherit" component={Link} to="/login">
+              <Button component={Link} to="/login" sx={{ ml: 2 }} color="inherit">
                 Login
               </Button>
-              <Button
-                color="inherit"
-                component={Link}
-                to="/register"
-                variant="outlined"
-                sx={{ ml: 1, borderColor: "white", color: "white" }}
-              >
+              <Button component={Link} to="/register" sx={{ ml: 1 }} variant="outlined" color="inherit">
                 Register
               </Button>
             </>

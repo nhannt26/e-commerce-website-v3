@@ -18,14 +18,17 @@ const ROLE_COLORS = {
   admin: "error",
   staff: "warning",
   user: "default",
+  customer: "default",
 };
 
 export default function UserList() {
   const [search, setSearch] = useState("");
   const { data, isLoading } = useUsers(search);
+  console.log(data);
+
   const updateRole = useUpdateUserRole();
 
-  const users = data?.data || [];
+  const users = data?.data?.results?.users ?? [];
 
   return (
     <Box>
@@ -57,17 +60,12 @@ export default function UserList() {
           <TableBody>
             {users.map((user) => (
               <TableRow key={user._id}>
-                <TableCell>{user.name}</TableCell>
+                <TableCell>{user.fullName}</TableCell>
                 <TableCell>{user.email}</TableCell>
 
                 {/* Role */}
                 <TableCell>
-                  <Chip
-                    label={user.role}
-                    color={ROLE_COLORS[user.role]}
-                    size="small"
-                    sx={{ mr: 1 }}
-                  />
+                  <Chip label={user.role} color={ROLE_COLORS[user.role]} size="small" sx={{ mr: 1 }} />
 
                   <Select
                     size="small"
@@ -82,6 +80,7 @@ export default function UserList() {
                     <MenuItem value="user">User</MenuItem>
                     <MenuItem value="staff">Staff</MenuItem>
                     <MenuItem value="admin">Admin</MenuItem>
+                    <MenuItem value="customer">Customer</MenuItem>
                   </Select>
                 </TableCell>
 
@@ -94,15 +93,11 @@ export default function UserList() {
                   />
                 </TableCell>
 
-                <TableCell>
-                  {new Date(user.createdAt).toLocaleDateString()}
-                </TableCell>
+                <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
 
                 <TableCell>{user.totalOrders}</TableCell>
 
-                <TableCell align="right">
-                  {/* Future actions */}
-                </TableCell>
+                <TableCell align="right">{/* Future actions */}</TableCell>
               </TableRow>
             ))}
 

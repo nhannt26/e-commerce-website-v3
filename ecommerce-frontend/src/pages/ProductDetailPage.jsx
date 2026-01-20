@@ -21,10 +21,12 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Add, Remove } from "@mui/icons-material";
-import { productAPI, cartAPI } from "../services/api";
+import { productAPI } from "../services/api";
+import { useCart } from "../context/CartContext";
 
 const ProductDetailPage = () => {
   const { id } = useParams();
+  const { addToCart } = useCart();
 
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -93,12 +95,12 @@ const ProductDetailPage = () => {
     });
   };
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = async (e) => {
+    e.stopPropagation();
     try {
-      await cartAPI.addItem(product._id, quantity);
-      alert("Added to cart");
-    } catch (err) {
-      console.error(err);
+      await addToCart(product._id, 1);
+    } catch (error) {
+      console.error("Failed to add to cart:", error);
     }
   };
 

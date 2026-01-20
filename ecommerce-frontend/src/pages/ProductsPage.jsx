@@ -31,7 +31,7 @@ export default function ProductsPage() {
 
       const params = {
         page,
-        limit: 12,
+        // limit: 12,
         sort: sortBy,
         order,
       };
@@ -40,6 +40,8 @@ export default function ProductsPage() {
       if (search) params.search = search;
 
       const response = await productAPI.getAll(params);
+      console.log(response);
+      
 
       setProducts(response.data.data);
       setTotalPages(response.data.totalPages || 1);

@@ -126,7 +126,11 @@ cartSchema.methods.calculateTotals = function () {
 };
 
 // Add item to cart
-cartSchema.methods.addItem = async function (productId, quantity = 1) {
+cartSchema.methods.addItem = async function (productId, quantity) {
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    throw new Error("Invalid product ID");
+  }
+  
   const Product = mongoose.model("Product");
 
   // Get product
@@ -256,7 +260,7 @@ cartSchema.methods.clearCart = async function () {
 cartSchema.methods.populateItems = function () {
   return this.populate({
     path: "items.product",
-    select: "name price stock images category brand",
+    select: "name price sku stock images category brand",
   });
 };
 

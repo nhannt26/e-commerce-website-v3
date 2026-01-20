@@ -1,147 +1,231 @@
-import { createContext, useReducer, useEffect, useState, useContext } from "react";
+import { createContext, useContext, useEffect, useReducer, useState } from "react";
 import { cartAPI } from "../services/api";
-import toast from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
-const CartContext = createContext(null);
+// =======================
+// Initial State
+// =======================
+const initialState = JSON.parse(localStorage.getItem("guest_cart")) || {
+  items: [],
+  pricing: {
+    subtotal: 0,
+    shipping: 0,
+    discount: 0,
+    total: 0,
+  },
+};
 
-// Cart reducer for state management
+// =======================
+// Reducer
+// =======================
 function cartReducer(state, action) {
   switch (action.type) {
     case "SET_CART":
-      return {
-        items: action.payload.items || [],
-        pricing: {
-          subtotal: action.payload.pricing?.subtotal ?? 0,
-          shipping: action.payload.pricing?.shipping ?? 0,
-          discount: action.payload.pricing?.discount ?? 0,
-          total: action.payload.pricing?.total ?? 0,
-        },
-      };
+      return action.payload;
+
     case "ADD_ITEM":
-      return {
+      return calculatePricing({
         ...state,
         items: [...state.items, action.payload],
-      };
+      });
 
     case "UPDATE_ITEM":
-      return {
+      return calculatePricing({
         ...state,
         items: state.items.map((item) =>
-          item.product._id === action.payload.productId ? { ...item, quantity: action.payload.quantity } : item
+          item.product._id === action.payload.productId ? { ...item, quantity: action.payload.quantity } : item,
         ),
-      };
+      });
 
     case "REMOVE_ITEM":
-      return {
+      return calculatePricing({
         ...state,
         items: state.items.filter((item) => item.product._id !== action.payload),
-      };
+      });
 
     case "CLEAR_CART":
-      return {
+      return calculatePricing({
+        ...state,
         items: [],
-        pricing: { subtotal: 0, shipping: 0, discount: 0, total: 0 },
-      };
+      });
 
     default:
       return state;
   }
 }
 
-export function CartProvider({ children }) {
-  const [cart, dispatch] = useReducer(cartReducer, {
-    items: [],
-    pricing: { subtotal: 0, shipping: 0, discount: 0, total: 0 },
-  });
+// =======================
+// Pricing Calculation
+// =======================
+function calculatePricing(cart) {
+  const subtotal = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+  const shipping = subtotal > 0 ? 1 : 0;
+  const discount = 0;
+  const total = subtotal + shipping - discount;
+
+  return {
+    ...cart,
+    pricing: { subtotal, shipping, discount, total },
+  };
+}
+// =======================
+// Context
+// =======================
+const CartContext = createContext();
+export const useCart = () => useContext(CartContext);
+
+// =======================
+// Provider
+// =======================
+export function CartProvider({ children }) {
+  const [cart, dispatch] = useReducer(cartReducer, initialState);
   const [loading, setLoading] = useState(false);
 
-  // Load cart on mount
-  useEffect(() => {
-    loadCart();
-  }, []);
+  // Total items count
+  const itemCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
 
-  const loadCart = async () => {
+  // =======================
+  // Load Cart from API
+  // =======================
+  const refreshCart = async () => {
     try {
       setLoading(true);
-      const { data } = await cartAPI.getCart();
-      dispatch({ type: "SET_CART", payload: data.data });
-    } catch (error) {
-      console.error("Error loading cart:", error);
-      // If user not logged in, cart might be empty
-      if (error.response?.status !== 401) {
-        toast.error("Failed to load cart");
-      }
+      const res = await cartAPI.getCart();
+      dispatch({
+        type: "SET_CART",
+        payload: {
+          ...res.data.data,
+          pricing: res.data.data.totals,
+        },
+      });
+    } catch (err) {
+      if (err.response?.status === 401) return; // Not logged in
+      toast.error("Failed to load cart");
     } finally {
       setLoading(false);
     }
   };
 
+  // useEffect(() => {
+  //   if (!localStorage.getItem("token")) {
+  //     localStorage.setItem("guest_cart", JSON.stringify(cart));
+  //   }
+  // }, [cart]);
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      refreshCart();
+    }
+  }, []);
+  // =======================
+  // Methods
+  // =======================
+
   const addToCart = async (productId, quantity = 1) => {
     try {
-      const { data } = await cartAPI.addItem(productId, quantity);
-      dispatch({ type: "SET_CART", payload: data.data });
+      setLoading(true);
+
+      const res = await cartAPI.addItem({
+        productId,
+        quantity,
+      });
+
+      dispatch({
+        type: "SET_CART",
+        payload: {
+          ...res.data.data,
+          pricing: res.data.data.totals,
+        },
+      });
       toast.success("Added to cart!");
-      return data;
-    } catch (error) {
-      const message = error.response?.data?.message || "Failed to add to cart";
-      toast.error(message);
-      throw error;
+    } catch (err) {
+      if (err.response?.status === 401) {
+        return toast.error("Please log in first");
+      }
+      toast.error(err.response?.data?.message || "Failed to add item");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const updateQuantity = async (productId, quantity) => {
+  const updateQuantity = async (itemId, quantity) => {
+    console.log("Updating item:", itemId, "to qty:", quantity);
     try {
-      const { data } = await cartAPI.updateItem(productId, quantity);
-      dispatch({ type: "SET_CART", payload: data.data });
-      toast.success("Cart updated");
-    } catch (error) {
-      toast.error("Failed to update cart");
-      throw error;
+      setLoading(true);
+      const res = await cartAPI.updateItem(itemId, quantity);
+
+      dispatch({
+        type: "SET_CART",
+        payload: {
+          ...res.data.data,
+          pricing: res.data.data.totals,
+        },
+      });
+      console.log("Calling:", `/cart/items/${itemId}`);
+    } catch (err) {
+      if (err.response?.status === 401) return toast.error("Please log in first");
+      toast.error("Failed to update quantity");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const removeItem = async (productId) => {
+  const removeItem = async (itemId) => {
     try {
-      await cartAPI.removeItem(productId);
-      dispatch({ type: "REMOVE_ITEM", payload: productId });
-      toast.success("Item removed");
-    } catch (error) {
+      setLoading(true);
+      const res = await cartAPI.removeItem(itemId);
+
+      dispatch({
+        type: "SET_CART",
+        payload: {
+          ...res.data.data,
+          pricing: res.data.data.totals,
+        },
+      });
+      toast.info("Item removed");
+    } catch (err) {
+      if (err.response?.status === 401) return toast.error("Please log in first");
       toast.error("Failed to remove item");
-      throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   const clearCart = async () => {
     try {
+      setLoading(true);
       await cartAPI.clearCart();
+
       dispatch({ type: "CLEAR_CART" });
-      toast.success("Cart cleared");
-    } catch (error) {
+      toast.info("Cart cleared");
+    } catch (err) {
+      if (err.response?.status === 401) {
+        return toast.error("Please log in first");
+      }
       toast.error("Failed to clear cart");
-      throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
-  const value = {
-    cart,
-    loading,
-    addToCart,
-    updateQuantity,
-    removeItem,
-    clearCart,
-    itemCount: cart.items.length,
-    refreshCart: loadCart,
-  };
-
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
-}
-
-// Custom hook to use cart context
-export function useCart() {
-  const context = useContext(CartContext);
-  if (!context) {
-    throw new Error("useCart must be used within CartProvider");
-  }
-  return context;
+  // =======================
+  // Provide Context
+  // =======================
+  return (
+    <CartContext.Provider
+      value={{
+        cart,
+        loading,
+        itemCount,
+        addToCart,
+        updateQuantity,
+        removeItem,
+        clearCart,
+        refreshCart,
+      }}
+    >
+      {children}
+    </CartContext.Provider>
+  );
 }
