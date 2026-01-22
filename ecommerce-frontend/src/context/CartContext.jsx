@@ -131,6 +131,8 @@ export function CartProvider({ children }) {
         quantity,
       });
 
+      await refreshCart();
+
       dispatch({
         type: "SET_CART",
         payload: {
@@ -155,6 +157,8 @@ export function CartProvider({ children }) {
       setLoading(true);
       const res = await cartAPI.updateItem(itemId, quantity);
 
+      await refreshCart();
+
       dispatch({
         type: "SET_CART",
         payload: {
@@ -176,6 +180,8 @@ export function CartProvider({ children }) {
       setLoading(true);
       const res = await cartAPI.removeItem(itemId);
 
+      await refreshCart();
+      
       dispatch({
         type: "SET_CART",
         payload: {

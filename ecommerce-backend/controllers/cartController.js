@@ -73,7 +73,7 @@ exports.addItem = async (req, res, next) => {
     await cart.addItem(productId, qty);
 
     // Populate and return
-    await cart.populate();
+    await cart.populateItems();
 
     res.status(201).json({
       success: true,
@@ -127,7 +127,7 @@ exports.updateItemQuantity = async (req, res, next) => {
     await cart.updateItemQuantity(itemId, parseInt(quantity));
 
     // Populate and return
-    await cart.populate();
+    await cart.populateItems();
 
     res.json({
       success: true,
@@ -168,7 +168,7 @@ exports.removeItem = async (req, res, next) => {
     await cart.removeItem(itemId);
 
     // Populate and return
-    await cart.populate();
+    await cart.populateItems();
 
     res.json({
       success: true,
@@ -229,7 +229,7 @@ exports.mergeCart = async (req, res, next) => {
     if (!req.session.cartId) {
       // No guest cart to merge
       const cart = await Cart.getCartForUser(req.user._id);
-      await cart.populate();
+      await cart.populateItems();
 
       return res.json({
         success: true,
@@ -307,6 +307,7 @@ exports.validateCart = async (req, res, next) => {
     // validateCart() là method trong Cart model
     // ví dụ: check stock, product tồn tại, giá thay đổi…
     const validationResult = await cart.validateCart();
+    await cart.populateItems();
 
     res.json({
       success: true,
@@ -416,6 +417,7 @@ exports.saveForLater = async (req, res, next) => {
 
     // Remove from cart
     await cart.removeItem(itemId);
+    await cart.populateItems();
 
     res.json({
       success: true,
@@ -451,7 +453,7 @@ exports.moveToCart = async (req, res, next) => {
     // Add to cart
     const cart = await Cart.getCartForUser(req.user._id);
     await cart.addItem(productId, quantity || 1);
-    await cart.populate();
+    await cart.populateItems();
 
     res.json({
       success: true,

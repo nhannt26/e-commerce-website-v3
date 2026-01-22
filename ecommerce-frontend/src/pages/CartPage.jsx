@@ -28,7 +28,6 @@ export default function CartPage() {
   const { user } = useAuth();
   const { cart, updateQuantity, removeItem, clearCart, loading } = useCart();
   console.log(cart);
-  
 
   const handleQuantityChange = async (productId, newQuantity) => {
     if (newQuantity < 1) return;
@@ -101,13 +100,13 @@ export default function CartPage() {
               </TableHead>
               <TableBody>
                 {cart.items.map((item) => (
-                  <TableRow key={item.product._id}>
+                  <TableRow key={item._id}>
                     {/* Product Info */}
                     <TableCell>
                       <Box sx={{ display: "flex", alignItems: "center" }}>
                         <img
-                          src={item.product.images?.[0] || "/placeholder.jpg"}
-                          alt={item.product.name}
+                          src={item.product?.images?.[0] || "/placeholder.jpg"}
+                          alt={item.product?.name || "Product"}
                           style={{
                             width: 80,
                             height: 80,
@@ -117,9 +116,9 @@ export default function CartPage() {
                           }}
                         />
                         <Box>
-                          <Typography variant="subtitle1">{item.product.name}</Typography>
+                          <Typography variant="subtitle1">{item.product?.name || "Loading..."}</Typography>
                           <Typography variant="body2" color="text.secondary">
-                            {item.product.sku}
+                            {item.product?.sku || ""}
                           </Typography>
                         </Box>
                       </Box>
@@ -142,13 +141,17 @@ export default function CartPage() {
                           type="number"
                           value={item.quantity}
                           onChange={(e) => handleQuantityChange(item._id, parseInt(e.target.value))}
-                          inputProps={{ min: 1, max: item.product.stock, style: { textAlign: "center" } }}
+                          inputProps={{
+                            min: 1,
+                            max: item.product?.stock ?? 99,
+                            style: { textAlign: "center" },
+                          }}
                           sx={{ width: 60, mx: 1 }}
                         />
                         <IconButton
                           size="small"
                           onClick={() => handleQuantityChange(item._id, item.quantity + 1)}
-                          disabled={item.quantity >= item.product.stock}
+                          disabled={item.product ? item.quantity >= item.product.stock : false}
                         >
                           +
                         </IconButton>
