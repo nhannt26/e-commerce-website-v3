@@ -21,7 +21,7 @@ const HomePage = () => {
   useEffect(() => {
     const fetchHomeData = async () => {
       try {
-        const [productRes, categoryRes] = await Promise.all([productAPI.getAll({ limit: 8 }), categoryAPI.getAll()]);
+        const [productRes, categoryRes] = await Promise.all([productAPI.getAll({featured: true, limit: 8 }), categoryAPI.getAll()]);
 
         setProducts(productRes.data.data || []);
         setCategories(categoryRes.data.data || []);

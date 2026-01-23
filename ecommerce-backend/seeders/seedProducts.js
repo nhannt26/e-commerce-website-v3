@@ -24,6 +24,10 @@ async function seedProducts() {
   const laptops = await getCategory("laptops");
   const accessories = await getCategory("accessories");
   const kitchen = await getCategory("kitchen");
+  const tablets = await getCategory("tablets");
+  const men = await getCategory("men");
+  const women = await getCategory("women");
+  const bedroom = await getCategory("bedroom");
 
   const products = [
     // 🎧 Electronics
@@ -70,6 +74,14 @@ async function seedProducts() {
       features: ["A17 Chip", "OLED Display", "Face ID"],
       tags: ["iphone", "apple", "smartphone"],
       featured: true,
+      specifications: {
+        screen: "6.1 inch OLED",
+        cpu: "Apple A17",
+        ram: "8GB",
+        storage: "256GB",
+        battery: "3279 mAh",
+        os: "iOS",
+      },
     },
     {
       name: "Samsung Galaxy S24",
@@ -102,6 +114,15 @@ async function seedProducts() {
       image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8",
       features: ["M3 Chip", "Liquid Retina XDR"],
       tags: ["macbook", "apple", "laptop"],
+      specifications: {
+        cpu: "Apple M3",
+        ram: "16GB",
+        storage: "512GB SSD",
+        screen: "14.2 inch",
+        gpu: "Integrated",
+        os: "macOS",
+        weight: "1.6kg",
+      },
     },
     {
       name: "Dell XPS 15",
@@ -134,6 +155,13 @@ async function seedProducts() {
       image: "https://images.unsplash.com/photo-1585386959984-a4155224a1ad",
       features: ["ANC", "Spatial Audio"],
       tags: ["airpods", "apple", "earbuds"],
+      specifications: {
+        type: "In-ear",
+        connectivity: "Bluetooth 5.3",
+        battery: "6h (ANC on)",
+        charging: "MagSafe",
+        waterResistance: "IPX4",
+      },
     },
     {
       name: "Mechanical Keyboard",
@@ -166,6 +194,12 @@ async function seedProducts() {
       image: "https://images.unsplash.com/photo-1606813909359-9c2c4d0a2e64",
       features: ["Auto Cook", "Keep Warm"],
       tags: ["kitchen", "appliance"],
+      specifications: {
+        power: "800W",
+        capacity: "1.8L",
+        voltage: "220V",
+        material: "Stainless Steel",
+      },
     },
     {
       name: "Air Fryer",
@@ -176,6 +210,12 @@ async function seedProducts() {
       image: "https://images.unsplash.com/photo-1621939514649-280e2ee25f60",
       features: ["Oil-less", "Digital Control"],
       tags: ["airfryer", "kitchen"],
+      specifications: {
+        power: "800W",
+        capacity: "1.8L",
+        voltage: "220V",
+        material: "Stainless Steel",
+      },
     },
     {
       name: "Blender Machine",
@@ -186,6 +226,107 @@ async function seedProducts() {
       image: "https://images.unsplash.com/photo-1570222094114-d054a817e56b",
       features: ["High Speed", "Glass Jar"],
       tags: ["blender", "kitchen"],
+      specifications: {
+        power: "800W",
+        capacity: "1.8L",
+        voltage: "220V",
+        material: "Stainless Steel",
+      },
+    },
+
+    // 📱 Tablets
+    {
+      name: "iPad Pro 12.9",
+      description: "High-performance tablet with M2 chip.",
+      basePrice: 1300,
+      category: tablets._id,
+      brand: "Apple",
+      image: "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04",
+      features: ["M2 Chip", "Liquid Retina", "Face ID"],
+      tags: ["ipad", "tablet", "apple"],
+      featured: true,
+    },
+    {
+      name: "Samsung Galaxy Tab S9",
+      description: "Premium Android tablet with AMOLED display.",
+      basePrice: 900,
+      category: tablets._id,
+      brand: "Samsung",
+      image: "https://images.unsplash.com/photo-1583394838336-acd977736f90",
+      features: ["AMOLED", "120Hz", "S Pen"],
+      tags: ["tablet", "samsung", "android"],
+    },
+
+    // 👔 Men Fashion
+    {
+      name: "Men Classic Denim Jacket",
+      description: "Stylish denim jacket for men.",
+      basePrice: 80,
+      category: men._id,
+      brand: "Levi's",
+      image: "https://images.unsplash.com/photo-1521334884684-d80222895322",
+      features: ["Denim", "Slim Fit"],
+      tags: ["men", "fashion", "jacket"],
+    },
+    {
+      name: "Men Casual Sneakers",
+      description: "Comfortable sneakers for daily wear.",
+      basePrice: 95,
+      category: men._id,
+      brand: "Nike",
+      image: "https://images.unsplash.com/photo-1528701800489-20be9c3ea9b3",
+      features: ["Breathable", "Lightweight"],
+      tags: ["men", "shoes", "sneakers"],
+      specifications: {
+        material: "Denim",
+        fit: "Slim Fit",
+        size: "M / L / XL",
+        origin: "Vietnam",
+      },
+    },
+
+    // 👗 Women Fashion
+    {
+      name: "Women Summer Dress",
+      description: "Lightweight floral summer dress.",
+      basePrice: 70,
+      category: women._id,
+      brand: "Zara",
+      image: "https://images.unsplash.com/photo-1520975916090-3105956dac38",
+      features: ["Floral", "Light Fabric"],
+      tags: ["women", "dress", "fashion"],
+    },
+    {
+      name: "Women Handbag",
+      description: "Elegant handbag for daily use.",
+      basePrice: 120,
+      category: women._id,
+      brand: "Charles & Keith",
+      image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3",
+      features: ["Leather", "Spacious"],
+      tags: ["women", "bag", "fashion"],
+    },
+
+    // 🛏 Bedroom
+    {
+      name: "Queen Size Bed Frame",
+      description: "Modern wooden bed frame.",
+      basePrice: 450,
+      category: bedroom._id,
+      brand: "IKEA",
+      image: "https://images.unsplash.com/photo-1505691938895-1758d7feb511",
+      features: ["Wooden", "Queen Size"],
+      tags: ["bedroom", "furniture", "bed"],
+    },
+    {
+      name: "Memory Foam Mattress",
+      description: "Comfortable mattress with memory foam.",
+      basePrice: 600,
+      category: bedroom._id,
+      brand: "SleepWell",
+      image: "https://images.unsplash.com/photo-1582582429416-9c0c1c41d86d",
+      features: ["Memory Foam", "Orthopedic"],
+      tags: ["mattress", "bedroom"],
     },
   ];
 
@@ -203,6 +344,7 @@ async function seedProducts() {
     features: p.features,
     tags: p.tags,
     featured: p.featured || false,
+    specifications: p.specifications || {},
   }));
 
   await Product.create(productsToInsert);

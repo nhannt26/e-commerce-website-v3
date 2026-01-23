@@ -22,7 +22,7 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response interceptor - Handle errors
@@ -57,7 +57,7 @@ api.interceptors.response.use(
       console.error("Error:", error.message);
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 // Product API endpoints
@@ -71,8 +71,14 @@ export const productAPI = {
   // GET /api/products/search?q=query
   search: (query) => api.get("/products/search", { params: { q: query } }),
 
-  // GET /api/products/category/:categoryId
-  getByCategory: (categoryId, params) => api.get(`/products/category/${categoryId}`, { params }),
+  // GET /api/products/:categoryId
+  getByCategory: (categoryId, params) =>
+    api.get("/products", {
+      params: {
+        category: categoryId,
+        ...params,
+      },
+    }),
 };
 
 // Category API endpoints

@@ -23,8 +23,10 @@ router.get("/", cacheProducts, async (req, res, next) => {
       featured,
       search,
       sort,
+      order = "desc",
       page = 1,
       limit,
+      pagination = "true",
     } = req.query;
 
     const query = { isActive: true };
@@ -46,24 +48,29 @@ router.get("/", cacheProducts, async (req, res, next) => {
       query.$text = { $search: search };
     }
 
-    const sortOption = sort ? { [sort.replace("-", "")]: sort.startsWith("-") ? -1 : 1 } : { createdAt: -1 };
-
-    const skip = (page - 1) * limit;
-
-    const products = await Product.find(query)
-      .populate("category", "name slug")
-      .sort(sortOption)
-      .skip(skip)
-      .limit(Number(limit));
+    const sortOption = sort ? { [sort]: order === "asc" ? 1 : -1 } : { createdAt: -1 };
+    console.log(sortOption);
 
     const total = await Product.countDocuments(query);
+
+    // Nếu không pagination → lấy hết
+    let productsQuery = Product.find(query).populate("category", "name slug").sort(sortOption);
+
+    if (pagination !== "false") {
+      const safeLimit = Number(limit) || total; // fallback lấy hết
+      const skip = (page - 1) * safeLimit;
+
+      productsQuery = productsQuery.skip(skip).limit(safeLimit);
+    }
+
+    const products = await productsQuery;
 
     res.json({
       success: true,
       count: products.length,
       total,
-      page: Number(page),
-      pages: Math.ceil(total / limit),
+      page: pagination === "false" ? 1 : Number(page),
+      pages: pagination === "false" ? 1 : Math.ceil(total / (Number(limit) || total)),
       data: products,
     });
   } catch (error) {
