@@ -337,7 +337,7 @@ async function seedProducts() {
     price: randomInt(p.basePrice * 0.9, p.basePrice * 1.1),
     category: p.category,
     stock: randomInt(10, 150),
-    image: p.image,
+    image: `https://source.unsplash.com/600x600/?${p.tags[0]}`,
     rating: randomFloat(3.8, 4.9),
     numReviews: randomInt(20, 600),
     brand: p.brand,

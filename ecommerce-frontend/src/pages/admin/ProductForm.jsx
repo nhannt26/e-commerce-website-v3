@@ -37,15 +37,21 @@ export default function ProductForm() {
   const navigate = useNavigate();
 
   const { data: product, isLoading } = useProduct(id);
+  console.log(product);
+
   const createProduct = useCreateProduct();
-  const updateProduct = useUpdateProduct(id);
+  const updateProduct = useUpdateProduct(() => {
+    navigate("/admin/products");
+  });
 
   const { data: categories = [], isLoading: loadingCategories } = useCategories();
   console.log(categories);
+
   const {
     register,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -63,57 +69,57 @@ export default function ProductForm() {
   });
 
   useEffect(() => {
-    if (isEdit && product) {
-      setValue("name", product.name);
-      setValue("sku", product.sku);
-      setValue("category", product.category?._id || "");
-      setValue("description", product.description || "");
-      setValue("price", product.price);
-      setValue("discount", product.discount || 0);
-      setValue("stock", product.stock);
-      setValue("isActive", product.isActive);
-    }
-  }, [isEdit, product, setValue]);
+    register("images");
+  }, [register]);
 
-  // Prefill when editing
-  if (isEdit && product) {
-    Object.entries(product).forEach(([key, value]) => {
-      setValue(key, value);
-    });
-  }
+  useEffect(() => {
+    if (isEdit && product && categories.length) {
+      reset({
+        name: product.name,
+        sku: product.sku,
+        category: typeof product.category === "object" ? product.category._id : product.category,
+        description: product.description,
+        price: product.price,
+        discount: product.discount,
+        stock: product.stock,
+        isActive: product.isActive,
+      });
+      console.log(product.sku);
+    }
+  }, [isEdit, product, categories, reset]);
 
   const onSubmit = async (formData) => {
     try {
       const data = new FormData();
 
-      // Text fields
       data.append("name", formData.name);
-      data.append("sku", formData.sku);
       data.append("category", formData.category);
       data.append("description", formData.description || "");
-      data.append("price", formData.price);
-      data.append("discount", formData.discount || 0);
-      data.append("stock", formData.stock);
-      data.append("isActive", formData.isActive);
+      data.append("price", Number(formData.price));
+      data.append("discount", Number(formData.discount || 0));
+      data.append("stock", Number(formData.stock));
+      data.append("isActive", formData.isActive ? "true" : "false");
 
-      // Images
       if (formData.images?.length) {
         formData.images.forEach((file) => {
           data.append("images", file);
         });
       }
 
+      if (!isEdit) {
+        data.append("sku", formData.sku);
+      }
+
       if (isEdit) {
-        await updateProduct.mutateAsync(data);
+        await updateProduct.mutateAsync({ id, data });
         toast.success("Product updated successfully");
       } else {
         await createProduct.mutateAsync(data);
         toast.success("Product created successfully");
       }
-
-      navigate("/admin/products");
     } catch (error) {
-      console.error(error);
+      console.error(error.response?.data || error);
+      toast.error(error.response?.data?.message || "Failed to create/update product");
     }
   };
 
@@ -147,7 +153,9 @@ export default function ProductForm() {
             <TextField
               label="SKU"
               fullWidth
+              value={product?.sku}
               {...register("sku")}
+              disabled={isEdit}
               error={!!errors.sku}
               helperText={errors.sku?.message}
             />
@@ -158,11 +166,10 @@ export default function ProductForm() {
               select
               label="Category"
               fullWidth
-              defaultValue=""
               {...register("category")}
               error={!!errors.category}
               helperText={errors.category?.message}
-              disabled={loadingCategories}
+              disabled={loadingCategories || isEdit}
             >
               <MenuItem value="">
                 <em>Select category</em>
@@ -175,7 +182,7 @@ export default function ProductForm() {
               ))}
             </TextField>
           </Grid>
-          
+
           <Grid size={{ xs: 12 }}>
             <TextField label="Description" multiline rows={4} fullWidth {...register("description")} />
           </Grid>
@@ -218,7 +225,7 @@ export default function ProductForm() {
           </Grid>
 
           <Grid size={{ xs: 12 }}>
-            <FormControlLabel control={<Checkbox defaultChecked {...register("isActive")} />} label="Active" />
+            <FormControlLabel control={<Checkbox {...register("isActive")} />} label="Active" />
           </Grid>
 
           <Grid size={{ xs: 12 }}>

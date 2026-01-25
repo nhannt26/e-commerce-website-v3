@@ -20,7 +20,9 @@ const productSchema = new mongoose.Schema(
     sku: {
       type: String,
       unique: true,
-      required: [true, "SKU is required"],
+      required: function () {
+        return !this.isNew; // chỉ bắt buộc sau khi đã tạo
+      },
       uppercase: true,
       trim: true,
     },
@@ -30,7 +32,7 @@ const productSchema = new mongoose.Schema(
       ref: "Category",
       required: true,
     },
-    
+
     description: {
       type: String,
       required: [true, "Description is required"],
@@ -40,7 +42,8 @@ const productSchema = new mongoose.Schema(
 
     brand: {
       type: String,
-      required: [true, "Brand is required"],
+      // required: [true, "Brand is required"],
+      required: false,
       trim: true,
     },
 
@@ -255,7 +258,7 @@ productSchema.pre("save", function () {
 });
 
 productSchema.pre("save", function () {
-  if (!this.sku) {
+  if (this.isNew && !this.sku) {
     this.sku = `SKU-${this._id.toString().slice(-6)}-${Date.now()}`;
   }
 });
