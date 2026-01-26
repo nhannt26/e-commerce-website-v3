@@ -141,6 +141,7 @@ export const adminOrderAPI = {
   getAll: (params) => api.get("/admin/orders", { params }),
   getById: (id) => api.get(`/admin/orders/${id}`),
   updateStatus: (id, status) => api.put(`/admin/orders/${id}/status`, { status }),
+  deleteOrder: (id) => api.delete(`/admin/orders/${id}`),
 };
 
 export const adminUserAPI = {

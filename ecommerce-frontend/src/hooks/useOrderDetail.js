@@ -7,7 +7,7 @@ export const useOrderDetail = (id) => {
     queryKey: ["order", id],
     queryFn: () => adminOrderAPI.getById(id),
     enabled: !!id,
-    return: res => res.data,
+    select: res => res.data.data,
   });
 };
 
@@ -15,11 +15,14 @@ export const useUpdateOrderStatus = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: adminOrderAPI.updateStatus,
-    onSuccess: () => {
+    mutationFn: ({ id, status }) =>
+      adminOrderAPI.updateStatus(id, status), // ✅ unwrap đúng
+    onSuccess: (_, variables) => {
       toast.success("Order status updated");
+
+      // refetch list & detail
       queryClient.invalidateQueries({ queryKey: ["orders"] });
-      queryClient.invalidateQueries({ queryKey: ["order"] });
+      queryClient.invalidateQueries({ queryKey: ["order", variables.id] });
     },
     onError: () => {
       toast.error("Failed to update order status");

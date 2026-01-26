@@ -63,10 +63,25 @@ export function useDeleteProduct() {
 
   return useMutation({
     mutationFn: (id) => adminProductAPI.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["products"] });
+
+    onSuccess: (_, deletedId) => {
       toast.success("Product deleted successfully");
+
+      // 🔥 UPDATE TẤT CẢ CACHE products (mọi filter)
+      const queries = queryClient.getQueryCache().findAll({ queryKey: ["products"] });
+
+      queries.forEach((query) => {
+        queryClient.setQueryData(query.queryKey, (oldData) => {
+          if (!oldData?.data) return oldData;
+
+          return {
+            ...oldData,
+            data: oldData.data.filter((product) => product._id !== deletedId),
+          };
+        });
+      });
     },
+
     onError: (error) => {
       toast.error(error.response?.data?.message || "Failed to delete product");
     },

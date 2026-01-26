@@ -39,7 +39,10 @@ export default function ProductForm() {
   const { data: product, isLoading } = useProduct(id);
   console.log(product);
 
-  const createProduct = useCreateProduct();
+  const createProduct = useCreateProduct(() => {
+    navigate("/admin/products");
+  });
+  
   const updateProduct = useUpdateProduct(() => {
     navigate("/admin/products");
   });

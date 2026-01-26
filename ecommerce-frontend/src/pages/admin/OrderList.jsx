@@ -13,7 +13,7 @@ import {
   Button,
   CircularProgress,
 } from "@mui/material";
-import { useOrders } from "../../hooks/useOrders";
+import { useDeleteOrder, useOrders } from "../../hooks/useOrders";
 
 const STATUS_TABS = [
   { label: "All", value: "all" },
@@ -46,8 +46,11 @@ export default function OrderList() {
   const navigate = useNavigate();
 
   const { data, isLoading } = useOrders(status);
-  console.log(data);
+  console.log(status);
   
+  const { mutate: deleteOrder, isLoading: isDeleting } = useDeleteOrder();
+  console.log(data);
+
   const orders = data?.data || [];
 
   return (
@@ -81,7 +84,7 @@ export default function OrderList() {
               <TableRow key={order._id}>
                 <TableCell>{order.orderNumber}</TableCell>
                 <TableCell>{order.user?.fullName}</TableCell>
-                <TableCell>{order.pricing?.total?.toLocaleString()}₫</TableCell>
+                <TableCell>{order.pricing?.total?.toLocaleString()}$</TableCell>
                 <TableCell>
                   <Chip
                     label={order.paymentStatus}
@@ -96,6 +99,19 @@ export default function OrderList() {
                 <TableCell align="right">
                   <Button size="small" variant="outlined" onClick={() => navigate(`/admin/orders/${order._id}`)}>
                     View
+                  </Button>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="error"
+                    disabled={isDeleting}
+                    onClick={() => {
+                      if (window.confirm("Are you sure you want to delete this order?")) {
+                        deleteOrder(order._id);
+                      }
+                    }}
+                  >
+                    Delete
                   </Button>
                 </TableCell>
               </TableRow>

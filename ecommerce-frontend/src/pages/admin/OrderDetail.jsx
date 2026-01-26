@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 import { useOrderDetail, useUpdateOrderStatus } from "../../hooks/useOrderDetail";
 import { useEffect } from "react";
+import toast from "react-hot-toast";
 
 const STATUS_OPTIONS = ["pending", "processing", "shipped", "delivered", "cancelled"];
 
@@ -31,6 +32,20 @@ export default function OrderDetail() {
 
   const [editedStatus, setEditedStatus] = useState("");
 
+  const handleUpdateStatus = () => {
+    updateStatus.mutate(
+      { id, status: editedStatus },
+      {
+        onSuccess: () => {
+          toast.success("Order status updated");
+        },
+        onError: () => {
+          toast.error("Update failed");
+        },
+      },
+    );
+  };
+
   useEffect(() => {
     if (!editedStatus && order?.orderStatus) {
       setEditedStatus(order.orderStatus);
@@ -39,7 +54,7 @@ export default function OrderDetail() {
 
   if (isLoading) return <CircularProgress />;
   if (!order) return <Typography>No order found</Typography>;
-  
+
   return (
     <Box>
       <Typography variant="h5" mb={2}>
@@ -54,14 +69,14 @@ export default function OrderDetail() {
               <Typography variant="h6">Order Information</Typography>
               <Typography>Date: {new Date(order.createdAt).toLocaleString()}</Typography>
               <Typography component="div">
-                Payment Status:{" "}
+                Payment Status:
                 <Chip
                   label={order.paymentStatus}
                   color={order.paymentStatus === "paid" ? "success" : "warning"}
                   size="small"
                 />
               </Typography>
-              <Typography>Total: {order.pricing?.total?.toLocaleString()}₫</Typography>
+              <Typography>Total: {order.pricing?.total?.toLocaleString()}$</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -71,7 +86,9 @@ export default function OrderDetail() {
           <Card>
             <CardContent>
               <Typography variant="h6">Customer Details</Typography>
-              <Typography>Name: {order.user?.fullName}</Typography>
+              <Typography>
+                Name: {order.user?.firstName} {order.user?.lastName}
+              </Typography>
               <Typography>Email: {order.user?.email}</Typography>
               <Typography>Phone: {order.shippingAddress?.phone}</Typography>
             </CardContent>
@@ -111,10 +128,10 @@ export default function OrderDetail() {
                 <TableBody>
                   {(order.items ?? []).map((item) => (
                     <TableRow key={item._id}>
-                      <TableCell>{item.product?.name}</TableCell>
-                      <TableCell>{item.price.toLocaleString()}₫</TableCell>
+                      <TableCell>{item.name}</TableCell>
+                      <TableCell>{item.price.toLocaleString()}$</TableCell>
                       <TableCell>{item.quantity}</TableCell>
-                      <TableCell>{(item.price * item.quantity).toLocaleString()}₫</TableCell>
+                      <TableCell>{(item.price * item.quantity).toLocaleString()}$</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -141,9 +158,10 @@ export default function OrderDetail() {
                 </Select>
                 <Button
                   variant="contained"
+                  onClick={handleUpdateStatus}
                   disabled={updateStatus.isLoading || !editedStatus || editedStatus === order?.orderStatus}
                 >
-                  Update
+                  {updateStatus.isLoading ? "Updating..." : "Update"}
                 </Button>
               </Box>
             </CardContent>

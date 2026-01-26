@@ -26,4 +26,7 @@ router.put("/:id/payment", orderController.markAsPaid);
 // PUT /api/admin/orders/:id/tracking - Add tracking information
 router.put("/:id/tracking", orderController.addTracking);
 
+// DELETE /api/admin/orders/:id - Delete an order
+router.delete("/:id", orderController.deleteOrder);
+
 module.exports = router;
