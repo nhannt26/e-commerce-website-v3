@@ -36,12 +36,8 @@ export default function OrderDetail() {
     updateStatus.mutate(
       { id, status: editedStatus },
       {
-        onSuccess: () => {
-          toast.success("Order status updated");
-        },
-        onError: () => {
-          toast.error("Update failed");
-        },
+        onSuccess: () => toast.success("Order status updated"),
+        onError: () => toast.error("Update failed"),
       },
     );
   };
@@ -128,7 +124,7 @@ export default function OrderDetail() {
                 <TableBody>
                   {(order.items ?? []).map((item) => (
                     <TableRow key={item._id}>
-                      <TableCell>{item.name}</TableCell>
+                      <TableCell>{item.product?.name}</TableCell>
                       <TableCell>{item.price.toLocaleString()}$</TableCell>
                       <TableCell>{item.quantity}</TableCell>
                       <TableCell>{(item.price * item.quantity).toLocaleString()}$</TableCell>
@@ -149,7 +145,12 @@ export default function OrderDetail() {
               </Typography>
 
               <Box display="flex" gap={2} alignItems="center">
-                <Select value={editedStatus} onChange={(e) => setEditedStatus(e.target.value)} size="small">
+                <Select
+                  value={editedStatus}
+                  onChange={(e) => setEditedStatus(e.target.value)}
+                  size="small"
+                  disabled={updateStatus.isLoading}
+                >
                   {STATUS_OPTIONS.map((s) => (
                     <MenuItem key={s} value={s}>
                       {s}

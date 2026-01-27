@@ -20,6 +20,8 @@ import ProductForm from "./pages/admin/ProductForm";
 import OrderDetail from "./pages/admin/OrderDetail";
 import UserList from "./pages/admin/UserList";
 import OrderList from "./pages/admin/OrderList";
+import OrderSuccessPage from "./pages/OrderSuccessPage";
+import PaymentSuccess from "./pages/PaymentSuccess";
 
 // Create Material-UI theme
 const theme = createTheme({
@@ -59,6 +61,8 @@ function App() {
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
+                <Route path="/order-success" element={<OrderSuccessPage />} />
+                <Route path="/payment-success" element={<PaymentSuccess />} />
                 <Route
                   path="/checkout"
                   element={

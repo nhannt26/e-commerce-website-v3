@@ -145,7 +145,7 @@ export default function CheckoutPage() {
       },
       paymentMethod: paymentMethod === "vnpay" ? "e_wallet" : paymentMethod === "bank" ? "bank_transfer" : "cod",
     };
-    
+
     try {
       const res = await orderAPI.create(orderData);
       // Expecting backend to return something like:
@@ -160,7 +160,7 @@ export default function CheckoutPage() {
 
       // For COD or Bank Transfer: clear cart and redirect to a confirmation page
       clearCart();
-      navigate(`/order-success/${res.orderId || ""}`);
+      navigate(`/order-success?orderId=${res.data.data._id}`);
     } catch (err) {
       console.error("Place order error:", err.response?.data || err);
       alert(err.response?.data?.message || "Failed to place order");
@@ -241,7 +241,6 @@ export default function CheckoutPage() {
       <RadioGroup value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
         <FormControlLabel value="vnpay" control={<Radio />} label="VNPay (Bank transfer, credit / card)" />
         <FormControlLabel value="cod" control={<Radio />} label="Cash on Delivery (COD)" />
-        <FormControlLabel value="bank" control={<Radio />} label="Bank Transfer" />
       </RadioGroup>
 
       <Box display="flex" gap={2} mt={3}>

@@ -111,17 +111,19 @@ export const orderAPI = {
   getById: (id) => api.get(`/orders/${id}`),
   cancel: (id) => api.post(`/orders/${id}/cancel`),
   updateStatus: (id, status) => api.put(`/orders/${id}/status`, { status }),
+  downloadInvoice: (id) => api.get(`/orders/${id}/invoice`, { responseType: "blob" }),
 };
 
 // Payment API endpoints (will use later)
 export const paymentAPI = {
   create: (orderId) => api.post("/payment/create", { orderId }),
   getTransaction: (id) => api.get(`/payment/transaction/${id}`),
+  retry: (orderId, bankCode) => api.post(`/payment/retry/${orderId}`, { bankCode }),
 };
 
 // Admin APIs
 export const adminDashboardAPI = {
-  getStats: () => api.get("/admin/dashboard"),
+  getStats: () => api.get("/admin/payment/dashboard"),
 };
 
 export const adminProductAPI = {

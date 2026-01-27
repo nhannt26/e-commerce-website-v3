@@ -77,14 +77,7 @@ exports.getOrder = async (req, res, next) => {
 // PUT /api/admin/orders/:id/status - Update order status
 exports.updateOrderStatus = async (req, res, next) => {
   try {
-    const { status, note } = req.body;
-
-    if (!status) {
-      return res.status(400).json({
-        success: false,
-        message: "Status is required",
-      });
-    }
+    const { status } = req.body;
 
     const order = await Order.findById(req.params.id);
 
@@ -95,7 +88,15 @@ exports.updateOrderStatus = async (req, res, next) => {
       });
     }
 
-    await order.updateStatus(status, note, req.user._id);
+    order.orderStatus = status;
+
+    // OPTIONAL: lưu lịch sử
+    order.statusHistory.push({
+      status,
+      changedBy: req.user._id,
+    });
+
+    await order.save();
 
     res.json({
       success: true,
@@ -103,6 +104,7 @@ exports.updateOrderStatus = async (req, res, next) => {
       data: order,
     });
   } catch (error) {
+    console.error("UPDATE ORDER STATUS ERROR:", error);
     next(error);
   }
 };
