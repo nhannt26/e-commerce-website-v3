@@ -50,7 +50,7 @@ export default function Dashboard() {
     return <Typography color="error">Failed to load dashboard data</Typography>;
   }
 
-  const { metrics, revenueByDay } = data;
+  const { metrics = {}, revenueByDay = [] } = data || {};
 
   return (
     <Box>
@@ -61,11 +61,11 @@ export default function Dashboard() {
       {/* Metric Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <MetricCard title="Total Revenue" value={formatPrice(metrics.totalRevenue)} icon="💰" color="primary" />
+          <MetricCard title="Total Revenue" value={formatPrice(metrics.totalRevenue || 0)} icon="💰" color="primary" />
         </Grid>
 
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <MetricCard title="Monthly Revenue" value={formatPrice(metrics.monthlyRevenue)} icon="📈" color="success" />
+          <MetricCard title="Monthly Revenue" value={formatPrice(metrics.monthlyRevenue || 0)} icon="📈" color="success" />
         </Grid>
 
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>

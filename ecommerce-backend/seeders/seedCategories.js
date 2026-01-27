@@ -27,7 +27,7 @@ async function seedCategories() {
     { name: "Accessories", slug: "accessories", parent: electronics._id },
 
     { name: "Men", slug: "men", parent: fashion._id },
-    { name: "Women", slug: "women", parent: fashion._id },
+    { name: "Sports", slug: "sports", parent: fashion._id },
 
     { name: "Kitchen", slug: "kitchen", parent: home._id },
     { name: "Bedroom", slug: "bedroom", parent: home._id },

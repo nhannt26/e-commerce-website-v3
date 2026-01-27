@@ -26,7 +26,7 @@ async function seedProducts() {
   const kitchen = await getCategory("kitchen");
   const tablets = await getCategory("tablets");
   const men = await getCategory("men");
-  const women = await getCategory("women");
+  const sports = await getCategory("sports");
   const bedroom = await getCategory("bedroom");
 
   const products = [
@@ -37,7 +37,7 @@ async function seedProducts() {
       basePrice: 120,
       category: electronics._id,
       brand: "SoundMax",
-      image: "https://images.unsplash.com/photo-1518445695753-1be9c5b1f42e",
+      image: "https://m.media-amazon.com/images/I/616tDnOfX4L._AC_SL1500_.jpg",
       features: ["Bluetooth 5.0", "Noise Cancellation", "20h Battery"],
       tags: ["electronics", "audio", "headphones"],
       featured: true,
@@ -48,7 +48,7 @@ async function seedProducts() {
       basePrice: 499,
       category: electronics._id,
       brand: "VisionTech",
-      image: "https://images.unsplash.com/photo-1583225152348-3e5c9b2e8c9f",
+      image: "https://kinghome.vn/data/images/smart-tivi-samsung-4k-50-inch-ua50du7700_1.jpg",
       features: ["4K UHD", "HDR10", "Voice Control"],
       tags: ["electronics", "tv", "4k"],
     },
@@ -58,7 +58,7 @@ async function seedProducts() {
       basePrice: 80,
       category: electronics._id,
       brand: "BoomSound",
-      image: "https://images.unsplash.com/photo-1585386959984-a4155224a1ad",
+      image: "https://m.media-amazon.com/images/I/71hvGkBMFNL._AC_UF894,1000_QL80_.jpg",
       features: ["Water Resistant", "12h Battery"],
       tags: ["speaker", "bluetooth", "audio"],
     },
@@ -70,7 +70,7 @@ async function seedProducts() {
       basePrice: 1200,
       category: phones._id,
       brand: "Apple",
-      image: "https://images.unsplash.com/photo-1695048133142-1a20484e9c98",
+      image: "https://shorturl.at/gGyQX",
       features: ["A17 Chip", "OLED Display", "Face ID"],
       tags: ["iphone", "apple", "smartphone"],
       featured: true,
@@ -89,7 +89,7 @@ async function seedProducts() {
       basePrice: 1000,
       category: phones._id,
       brand: "Samsung",
-      image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf",
+      image: "https://images.samsung.com/vn/smartphones/galaxy-s24/images/galaxy-s24-share-image.jpg",
       features: ["AMOLED", "120Hz", "Triple Camera"],
       tags: ["samsung", "android", "smartphone"],
     },
@@ -99,7 +99,7 @@ async function seedProducts() {
       basePrice: 900,
       category: phones._id,
       brand: "Google",
-      image: "https://images.unsplash.com/photo-1603791440384-56cd371ee9a7",
+      image: "https://m.media-amazon.com/images/I/41suocIFDCL._AC_UF1000,1000_QL80_.jpg",
       features: ["AI Camera", "Pure Android"],
       tags: ["pixel", "google", "android"],
     },
@@ -130,7 +130,7 @@ async function seedProducts() {
       basePrice: 1800,
       category: laptops._id,
       brand: "Dell",
-      image: "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04",
+      image: "https://cdn.tgdd.vn/Files/2021/05/11/1350667/Gallery/4.jpg",
       features: ["15-inch", "Intel i7", "4K Display"],
       tags: ["dell", "windows", "laptop"],
     },
@@ -140,7 +140,7 @@ async function seedProducts() {
       basePrice: 2000,
       category: laptops._id,
       brand: "Asus",
-      image: "https://images.unsplash.com/photo-1593642634315-48f5414c3ad9",
+      image: "https://cdn.tgdd.vn/hoi-dap/1217577/tim-hieu-ve-dong-laptop-choi-game-asus-rog-3.jpg",
       features: ["RTX GPU", "144Hz Display"],
       tags: ["gaming", "asus", "laptop"],
     },
@@ -152,7 +152,7 @@ async function seedProducts() {
       basePrice: 250,
       category: accessories._id,
       brand: "Apple",
-      image: "https://images.unsplash.com/photo-1585386959984-a4155224a1ad",
+      image: "https://cdsassets.apple.com/live/SZLF0YNV/images/sp/111851_sp880-airpods-Pro-2nd-gen.png",
       features: ["ANC", "Spatial Audio"],
       tags: ["airpods", "apple", "earbuds"],
       specifications: {
@@ -169,7 +169,7 @@ async function seedProducts() {
       basePrice: 150,
       category: accessories._id,
       brand: "KeyPro",
-      image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8",
+      image: "https://m.media-amazon.com/images/I/71ZRus2YNcL._AC_UF894,1000_QL80_.jpg",
       features: ["RGB", "Blue Switch"],
       tags: ["keyboard", "gaming"],
     },
@@ -191,7 +191,7 @@ async function seedProducts() {
       basePrice: 90,
       category: kitchen._id,
       brand: "Philips",
-      image: "https://images.unsplash.com/photo-1606813909359-9c2c4d0a2e64",
+      image: "https://shorturl.at/yahUl",
       features: ["Auto Cook", "Keep Warm"],
       tags: ["kitchen", "appliance"],
       specifications: {
@@ -207,7 +207,7 @@ async function seedProducts() {
       basePrice: 130,
       category: kitchen._id,
       brand: "Tefal",
-      image: "https://images.unsplash.com/photo-1621939514649-280e2ee25f60",
+      image: "https://m.media-amazon.com/images/I/81UnVRZkvbL.jpg",
       features: ["Oil-less", "Digital Control"],
       tags: ["airfryer", "kitchen"],
       specifications: {
@@ -241,7 +241,8 @@ async function seedProducts() {
       basePrice: 1300,
       category: tablets._id,
       brand: "Apple",
-      image: "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04",
+      image:
+        "https://cdn.tgdd.vn/Products/Images/522/221775/ipad-pro-12-9-inch-wifi-128gb-2020-bac-600x600-1-600x600.jpg",
       features: ["M2 Chip", "Liquid Retina", "Face ID"],
       tags: ["ipad", "tablet", "apple"],
       featured: true,
@@ -252,7 +253,7 @@ async function seedProducts() {
       basePrice: 900,
       category: tablets._id,
       brand: "Samsung",
-      image: "https://images.unsplash.com/photo-1583394838336-acd977736f90",
+      image: "https://cdn.tgdd.vn/Products/Images/522/311061/samsung-galaxy-tab-s9-kem-1-750x500.jpg",
       features: ["AMOLED", "120Hz", "S Pen"],
       tags: ["tablet", "samsung", "android"],
     },
@@ -264,7 +265,7 @@ async function seedProducts() {
       basePrice: 80,
       category: men._id,
       brand: "Levi's",
-      image: "https://images.unsplash.com/photo-1521334884684-d80222895322",
+      image: "https://shorturl.at/CFoRN",
       features: ["Denim", "Slim Fit"],
       tags: ["men", "fashion", "jacket"],
     },
@@ -274,7 +275,7 @@ async function seedProducts() {
       basePrice: 95,
       category: men._id,
       brand: "Nike",
-      image: "https://images.unsplash.com/photo-1528701800489-20be9c3ea9b3",
+      image: "https://shorturl.at/2moLQ",
       features: ["Breathable", "Lightweight"],
       tags: ["men", "shoes", "sneakers"],
       specifications: {
@@ -285,26 +286,26 @@ async function seedProducts() {
       },
     },
 
-    // 👗 Women Fashion
+    // 🏃 Sports & Fitness
     {
-      name: "Women Summer Dress",
-      description: "Lightweight floral summer dress.",
-      basePrice: 70,
-      category: women._id,
-      brand: "Zara",
-      image: "https://images.unsplash.com/photo-1520975916090-3105956dac38",
-      features: ["Floral", "Light Fabric"],
-      tags: ["women", "dress", "fashion"],
+      name: "Running Shoes",
+      description: "Lightweight running shoes for daily training.",
+      basePrice: 110,
+      category: sports._id,
+      brand: "Nike",
+      image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff",
+      features: ["Breathable", "Cushioned Sole"],
+      tags: ["sports", "running", "shoes"],
     },
     {
-      name: "Women Handbag",
-      description: "Elegant handbag for daily use.",
-      basePrice: 120,
-      category: women._id,
-      brand: "Charles & Keith",
-      image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3",
-      features: ["Leather", "Spacious"],
-      tags: ["women", "bag", "fashion"],
+      name: "Adjustable Dumbbells Set",
+      description: "Home workout adjustable dumbbell set.",
+      basePrice: 180,
+      category: sports._id,
+      brand: "Bowflex",
+      image: "https://shorturl.at/PiLvi",
+      features: ["Adjustable Weight", "Home Gym"],
+      tags: ["sports", "fitness", "gym"],
     },
 
     // 🛏 Bedroom
@@ -314,7 +315,7 @@ async function seedProducts() {
       basePrice: 450,
       category: bedroom._id,
       brand: "IKEA",
-      image: "https://images.unsplash.com/photo-1505691938895-1758d7feb511",
+      image: "https://m.media-amazon.com/images/I/91x-uou+CYL._AC_UF894,1000_QL80_.jpg",
       features: ["Wooden", "Queen Size"],
       tags: ["bedroom", "furniture", "bed"],
     },
@@ -324,28 +325,34 @@ async function seedProducts() {
       basePrice: 600,
       category: bedroom._id,
       brand: "SleepWell",
-      image: "https://images.unsplash.com/photo-1582582429416-9c0c1c41d86d",
+      image: "https://m.media-amazon.com/images/I/81fuKFHM1QL._AC_UF894,1000_QL80_.jpg",
       features: ["Memory Foam", "Orthopedic"],
       tags: ["mattress", "bedroom"],
     },
   ];
 
-  const productsToInsert = products.map((p, index) => ({
-    name: p.name,
-    sku: generateSKU(p.name, index),
-    description: p.description,
-    price: randomInt(p.basePrice * 0.9, p.basePrice * 1.1),
-    category: p.category,
-    stock: randomInt(10, 150),
-    image: `https://source.unsplash.com/600x600/?${p.tags[0]}`,
-    rating: randomFloat(3.8, 4.9),
-    numReviews: randomInt(20, 600),
-    brand: p.brand,
-    features: p.features,
-    tags: p.tags,
-    featured: p.featured || false,
-    specifications: p.specifications || {},
-  }));
+  const productsToInsert = products.map((p, index) => {
+    const images = p.image ? [p.image] : [`https://source.unsplash.com/600x600/?${p.tags[0]}`];
+
+    return {
+      name: p.name,
+      sku: generateSKU(p.name, index),
+      description: p.description,
+      price: randomInt(p.basePrice * 0.9, p.basePrice * 1.1),
+      category: p.category,
+      stock: randomInt(10, 150),
+
+      images, // ✅ đúng field
+
+      rating: randomFloat(3.8, 4.9),
+      numReviews: randomInt(20, 600),
+      brand: p.brand,
+      features: p.features,
+      tags: p.tags,
+      featured: p.featured || false,
+      specifications: p.specifications || {},
+    };
+  });
 
   await Product.create(productsToInsert);
   console.log("✅ Seeded ~20 products successfully");

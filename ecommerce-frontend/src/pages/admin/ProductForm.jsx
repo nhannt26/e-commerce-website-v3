@@ -22,7 +22,12 @@ import { useEffect } from "react";
 
 const schema = yup.object({
   name: yup.string().required("Product name is required"),
-  sku: yup.string().required("SKU is required"),
+  rating: yup
+    .number()
+    .typeError("Rating must be a number")
+    .min(0, "Rating must be >= 0")
+    .max(5, "Rating must be <= 5")
+    .default(0),
   category: yup.string().required("Category is required"),
   description: yup.string(),
   price: yup.number().typeError("Price must be a number").required("Price is required").min(0),
@@ -42,7 +47,7 @@ export default function ProductForm() {
   const createProduct = useCreateProduct(() => {
     navigate("/admin/products");
   });
-  
+
   const updateProduct = useUpdateProduct(() => {
     navigate("/admin/products");
   });
@@ -60,7 +65,7 @@ export default function ProductForm() {
     resolver: yupResolver(schema),
     defaultValues: {
       name: "",
-      sku: "",
+      rating: 0,
       category: "",
       description: "",
       price: 0,
@@ -79,9 +84,9 @@ export default function ProductForm() {
     if (isEdit && product && categories.length) {
       reset({
         name: product.name,
-        sku: product.sku,
-        category: typeof product.category === "object" ? product.category._id : product.category,
-        description: product.description,
+        rating: product.rating ?? 0,
+        category: typeof product.category === "object" ? product.category._id : product.category || "",
+        description: product.description || "",
         price: product.price,
         discount: product.discount,
         stock: product.stock,
@@ -96,6 +101,7 @@ export default function ProductForm() {
       const data = new FormData();
 
       data.append("name", formData.name);
+      data.append("rating", Number(formData.rating || 0));
       data.append("category", formData.category);
       data.append("description", formData.description || "");
       data.append("price", Number(formData.price));
@@ -107,10 +113,6 @@ export default function ProductForm() {
         formData.images.forEach((file) => {
           data.append("images", file);
         });
-      }
-
-      if (!isEdit) {
-        data.append("sku", formData.sku);
       }
 
       if (isEdit) {
@@ -154,13 +156,13 @@ export default function ProductForm() {
 
           <Grid size={{ xs: 12, md: 6 }}>
             <TextField
-              label="SKU"
+              label="Rating"
+              type="number"
               fullWidth
-              value={product?.sku}
-              {...register("sku")}
-              disabled={isEdit}
-              error={!!errors.sku}
-              helperText={errors.sku?.message}
+              inputProps={{ step: 0.1, min: 0, max: 5 }}
+              {...register("rating")}
+              error={!!errors.rating}
+              helperText={errors.rating?.message}
             />
           </Grid>
 
@@ -172,7 +174,7 @@ export default function ProductForm() {
               {...register("category")}
               error={!!errors.category}
               helperText={errors.category?.message}
-              disabled={loadingCategories || isEdit}
+              disabled={loadingCategories}
             >
               <MenuItem value="">
                 <em>Select category</em>
