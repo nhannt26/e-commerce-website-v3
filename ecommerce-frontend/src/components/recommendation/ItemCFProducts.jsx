@@ -1,7 +1,7 @@
 import { Box, Typography, CircularProgress, Grid } from "@mui/material";
 import { useEffect } from "react";
 import { useRecommendation } from "../../hooks/useRecommendation";
-import ProductCard from "../product/ProductCard";
+import ProductCard from "../Product/ProductCard";
 import { useAuth } from "../../context/AuthContext"; // ví dụ
 
 export default function ItemCFProducts() {

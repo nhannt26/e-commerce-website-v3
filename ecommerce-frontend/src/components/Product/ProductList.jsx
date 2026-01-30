@@ -1,5 +1,5 @@
 import { Grid, Box, Typography, CircularProgress } from "@mui/material";
-import ProductCard from "../product/ProductCard";
+import ProductCard from "../Product/ProductCard";
 
 export default function ProductList({ products = [], loading, error }) {
   if (loading) {
