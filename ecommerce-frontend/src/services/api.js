@@ -121,6 +121,11 @@ export const paymentAPI = {
   retry: (orderId, bankCode) => api.post(`/payment/retry/${orderId}`, { bankCode }),
 };
 
+// Recommendation API endpoints
+export const recommendationAPI = {
+  getItemCF: (userId) => api.get(`/recommendation/item-cf/${userId}`),
+};
+
 // Admin APIs
 export const adminDashboardAPI = {
   getStats: () => api.get("/admin/payment/dashboard"),

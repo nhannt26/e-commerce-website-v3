@@ -1,7 +1,7 @@
 import { Grid, Box, Typography, CircularProgress } from "@mui/material";
-import ProductCard from "./ProductCard";
+import ProductCard from "../product/ProductCard";
 
-export default function ProductList({ products, loading, error }) {
+export default function ProductList({ products = [], loading, error }) {
   if (loading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>

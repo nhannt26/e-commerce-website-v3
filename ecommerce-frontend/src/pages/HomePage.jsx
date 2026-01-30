@@ -12,11 +12,14 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { productAPI, categoryAPI } from "../services/api";
+import { useAuth } from "../context/AuthContext";
+import ItemCFProducts from "../components/recommendation/ItemCFProducts";
 
 const HomePage = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchHomeData = async () => {
@@ -156,6 +159,18 @@ const HomePage = () => {
             ))}
         </Grid>
       </Container>
+
+      {/* ================= RECOMMENDED PRODUCTS ================= */}
+      {user && (
+        <Box sx={{ py: 8 }}>
+          <Container>
+            <Typography variant="h5" fontWeight="bold" textAlign="center" mb={4}>
+              Recommended for You
+            </Typography>
+            <ItemCFProducts userId={user._id} />
+          </Container>
+        </Box>
+      )}
 
       {/* ================= CTA ================= */}
       <Box textAlign="center" pb={8}>

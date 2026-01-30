@@ -7,6 +7,8 @@ export default function ProductCard({ product }) {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
+  if (!product) return null;
+  
   const handleCardClick = () => {
     navigate(`/products/${product._id}`);
   };
@@ -27,7 +29,7 @@ export default function ProductCard({ product }) {
     }).format(price);
   };
 
-  const finalPrice = product.discount ? product.price * (1 - product.discount / 100) : product.price;
+  const finalPrice = product.salePrice && product.salePrice < product.price ? product.salePrice : product.price;
 
   return (
     <Card
@@ -55,9 +57,9 @@ export default function ProductCard({ product }) {
         />
 
         {/* Discount Badge */}
-        {product.discount > 0 && (
+        {product.salePrice && product.salePrice < product.price && (
           <Chip
-            label={`-${product.discount}%`}
+            label="SALE"
             color="error"
             size="small"
             sx={{
@@ -112,7 +114,7 @@ export default function ProductCard({ product }) {
 
         {/* Price */}
         <Box>
-          {product.discount > 0 ? (
+          {product.salePrice && product.salePrice < product.price ? (
             <>
               <Typography variant="h6" color="error" component="span" sx={{ fontWeight: "bold" }}>
                 {formatPrice(finalPrice)}

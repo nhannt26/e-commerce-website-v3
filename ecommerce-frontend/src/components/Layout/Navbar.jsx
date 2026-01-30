@@ -163,8 +163,8 @@ export default function Navbar() {
                 </MenuItem>
 
                 {user?.role === "admin" && (
-                  <MenuItem component={Link} to="/admin" onClick={handleMenuClose}>
-                    Admin Dashboard
+                  <MenuItem component={Link} to="/admin/products" onClick={handleMenuClose}>
+                    Admin {/* Dashboard */}
                   </MenuItem>
                 )}
 

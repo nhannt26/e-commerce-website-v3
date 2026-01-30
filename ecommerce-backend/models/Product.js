@@ -259,7 +259,7 @@ productSchema.pre("save", function () {
 
 productSchema.pre("save", function () {
   if (this.isNew && !this.sku) {
-    this.sku = `SKU-${this._id.toString().slice(-6)}-${Date.now()}`;
+    this.sku = `SKU-${index + 1}-${Date.now()}`;
   }
 });
 

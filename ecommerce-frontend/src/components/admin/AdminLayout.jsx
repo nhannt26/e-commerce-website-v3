@@ -14,7 +14,7 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import { Menu as MenuIcon, Dashboard, Inventory, ShoppingCart, People, Logout } from "@mui/icons-material";
+import { Menu as MenuIcon, /* Dashboard, */ Inventory, ShoppingCart, People, Logout } from "@mui/icons-material";
 import { useAuth } from "../../context/AuthContext";
 
 const drawerWidth = 240;
@@ -34,7 +34,7 @@ export default function AdminLayout() {
   };
 
   const menuItems = [
-    { text: "Dashboard", icon: <Dashboard />, path: "/admin" },
+    // { text: "Dashboard", icon: <Dashboard />, path: "/admin" },
     { text: "Products", icon: <Inventory />, path: "/admin/products" },
     { text: "Orders", icon: <ShoppingCart />, path: "/admin/orders" },
     { text: "Users", icon: <People />, path: "/admin/users" },

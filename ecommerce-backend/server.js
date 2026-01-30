@@ -58,6 +58,7 @@ const adminOrderRoutes = require("./routes/admin/orders");
 const reportRoutes = require("./routes/admin/reports");
 const paymentRoutes = require("./routes/payment");
 const adminPaymentRoutes = require("./routes/admin/payment");
+const recommendationRoutes = require("./routes/recommendation");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
@@ -76,6 +77,8 @@ app.use("/api/admin/orders", adminOrderRoutes);
 app.use("/api/admin/reports", reportRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/admin/payment", adminPaymentRoutes);
+app.use("/api/recommendation", recommendationRoutes);
+app.use("/uploads", express.static("uploads"));
 
 // Home route
 app.get("/", (req, res) => {
