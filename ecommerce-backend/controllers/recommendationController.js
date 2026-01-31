@@ -11,17 +11,24 @@ exports.getItemCF = async (req, res) => {
     let products = await itemCF(req.params.userId, 8);
 
     // 🔥 FALLBACK nếu Item-CF rỗng
-    if (!products || products.length === 0) {
-      products = await Product.find({ isActive: true }).sort({ "metadata.views": -1 }).limit(8);
+    if (!products || products.length < 8) {
+      const missing = 8 - (products?.length || 0);
+
+      const fallback = await Product.find({
+        isActive: true,
+        _id: { $nin: products.map((p) => p._id) },
+      })
+        .sort({ "metadata.views": -1 })
+        .limit(missing);
+
+      products = [...products, ...fallback];
       console.log(products.length);
     }
-    
 
     res.json({
       success: true,
       data: products,
     });
-    
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
